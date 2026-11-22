@@ -99,6 +99,10 @@ final class Plugin {
 				$module->register();
 			}
 		}
+
+		if ( is_admin() ) {
+			( new Admin\Settings_Page( $this ) )->register();
+		}
 	}
 
 	/**
