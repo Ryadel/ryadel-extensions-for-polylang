@@ -45,6 +45,7 @@ final class Module extends Base_Module {
 			'rest_api_init',
 			static function () {
 				( new Posts_Controller() )->register_routes();
+				( new Status_Controller() )->register_routes();
 			}
 		);
 	}
