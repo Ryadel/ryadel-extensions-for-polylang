@@ -43,6 +43,14 @@ abstract class Module {
 	abstract public function register();
 
 	/**
+	 * Called instead of `register()` when the module is switched off, also when Polylang Pro provides it. Keeps what
+	 * must survive while the module is off, such as the format of data already saved. Does nothing by default.
+	 *
+	 * @return void
+	 */
+	public function register_inactive() {}
+
+	/**
 	 * Whether Polylang Pro already provides this feature.
 	 *
 	 * @return bool

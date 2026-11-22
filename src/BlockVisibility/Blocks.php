@@ -21,14 +21,33 @@ final class Blocks {
 	const SCRIPT    = 'extensions-for-polylang-editor';
 
 	/**
+	 * Whether blocks are hidden by language and the editor shows the panel. When false, only the attribute is kept.
+	 *
+	 * @var bool
+	 */
+	private $enabled;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param bool $enabled False when the module is switched off: the attribute stays registered, on the server and in
+	 *                      the editor, so that saved languages are not dropped, but nothing is hidden and no panel shows.
+	 */
+	public function __construct( $enabled = true ) {
+		$this->enabled = (bool) $enabled;
+	}
+
+	/**
 	 * Adds the hooks. Called on `pll_model_init`, before blocks are registered on `init`.
 	 *
 	 * @return void
 	 */
 	public function register() {
 		add_filter( 'register_block_type_args', array( $this, 'add_attribute' ) );
-		add_filter( 'render_block', array( $this, 'render' ), 10, 2 );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor' ) );
+		if ( $this->enabled ) {
+			add_filter( 'render_block', array( $this, 'render' ), 10, 2 );
+		}
 	}
 
 	/**
@@ -78,13 +97,14 @@ final class Blocks {
 	}
 
 	/**
-	 * Loads the "Languages" panel in the block editors (posts, site, widgets).
+	 * Loads the "Languages" panel in the block editors (posts, site, widgets). When the module is off, the script only
+	 * adds the attribute to the blocks registered in JavaScript.
 	 *
 	 * @return void
 	 */
 	public function enqueue_editor() {
 		$languages = array();
-		foreach ( (array) pll_languages_list( array( 'fields' => '' ) ) as $language ) {
+		foreach ( $this->enabled ? (array) pll_languages_list( array( 'fields' => '' ) ) : array() as $language ) {
 			if ( is_object( $language ) ) {
 				$languages[] = array(
 					'slug' => $language->slug,
@@ -102,7 +122,12 @@ final class Blocks {
 		);
 		wp_add_inline_script(
 			self::SCRIPT,
-			'window.extensionsForPolylangBlocks = ' . wp_json_encode( array( 'languages' => $languages ) ) . ';',
+			'window.extensionsForPolylangBlocks = ' . wp_json_encode(
+				array(
+					'panel'     => $this->enabled,
+					'languages' => $languages,
+				)
+			) . ';',
 			'before'
 		);
 		wp_set_script_translations( self::SCRIPT, 'extensions-for-polylang' );

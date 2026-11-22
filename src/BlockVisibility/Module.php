@@ -43,4 +43,15 @@ final class Module extends Base_Module {
 	public function register() {
 		( new Blocks() )->register();
 	}
+
+	/**
+	 * Switched off, the module keeps the attribute registered, without panel and filter: otherwise the block editor
+	 * would drop the saved languages the next time a block is saved, and they would be lost when the module is
+	 * switched on again.
+	 *
+	 * @return void
+	 */
+	public function register_inactive() {
+		( new Blocks( false ) )->register();
+	}
 }

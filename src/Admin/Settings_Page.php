@@ -190,7 +190,8 @@ final class Settings_Page {
 
 	/**
 	 * Table of the translation coverage: for each post type and language, the number of posts, and how many posts of
-	 * the default language still wait for a translation, linked to the filtered admin list.
+	 * the default language still wait for a translation, linked to the filtered admin list. Media have no link: their
+	 * list (`upload.php`) does not take the Polylang filters, and `edit.php` redirects there without them.
 	 *
 	 * @return void
 	 */
@@ -214,6 +215,7 @@ final class Settings_Page {
 		}
 		?>
 		<p class="description"><?php esc_html_e( 'All statuses except trash. Below each count, the posts in the default language that are not translated yet.', 'extensions-for-polylang' ); ?></p>
+		<div style="overflow-x: auto;">
 		<table class="widefat striped efpl-coverage">
 			<thead>
 				<tr>
@@ -234,7 +236,13 @@ final class Settings_Page {
 								<?php echo esc_html( number_format_i18n( $data['languages'][ $slug ]['count'] ) ); ?>
 								<?php
 								$missing = $slug !== $default && isset( $data['languages'][ $default ]['untranslated'][ $slug ] ) ? $data['languages'][ $default ]['untranslated'][ $slug ] : 0;
-								if ( $missing > 0 ) {
+								if ( $missing > 0 && 'attachment' === $post_type ) {
+									printf(
+										'<br />%s',
+										/* translators: %s: number of posts. */
+										esc_html( sprintf( _n( '%s to translate', '%s to translate', $missing, 'extensions-for-polylang' ), number_format_i18n( $missing ) ) )
+									);
+								} elseif ( $missing > 0 ) {
 									$url = add_query_arg(
 										array(
 											'post_type'       => $post_type,
@@ -258,6 +266,7 @@ final class Settings_Page {
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+		</div>
 		<?php
 	}
 

@@ -97,6 +97,8 @@ final class Plugin {
 		foreach ( $this->modules as $module ) {
 			if ( $this->is_active( $module ) ) {
 				$module->register();
+			} else {
+				$module->register_inactive();
 			}
 		}
 

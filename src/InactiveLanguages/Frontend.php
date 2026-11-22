@@ -7,10 +7,13 @@
 
 namespace Ryadel\ExtensionsForPolylang\InactiveLanguages;
 
+use Ryadel\ExtensionsForPolylang\Plugin;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Answers 404 to visitors on the URLs of a hidden language: its home and archives, and its posts and terms.
+ * Answers 404 to visitors on the URLs of a hidden language: its home and archives, its posts and terms, and every URL
+ * of its domain or subdomain when the language is set from the domain.
  *
  * Once the proxy hides a language, Polylang no longer knows it, so `pll_get_post_language()` returns nothing for its
  * posts. Their language is read from the language taxonomies instead: `language` for posts, `term_language` (term
@@ -34,10 +37,12 @@ final class Frontend {
 		add_action( 'wp', array( $this, 'maybe_404' ), 1 );
 		add_filter( 'do_redirect_guess_404_permalink', array( $this, 'no_guess' ) );
 		add_filter( 'redirect_canonical', array( $this, 'no_redirect' ) );
+		add_filter( 'pll_check_canonical_url', array( $this, 'no_redirect' ) );
 	}
 
 	/**
-	 * Keeps WordPress from redirecting our 404, e.g. `?p=<id>` to the post URL without the language prefix.
+	 * Keeps WordPress and Polylang from redirecting our 404, e.g. `?p=<id>` to the post URL without the language
+	 * prefix, or the domain of a hidden language to the domain of the default one.
 	 *
 	 * @param string|false $redirect_url Redirect URL.
 	 * @return string|false
@@ -94,6 +99,10 @@ final class Frontend {
 			return true;
 		}
 
+		if ( $this->is_hidden_host( $hidden ) ) {
+			return true;
+		}
+
 		$object = $wp_query->get_queried_object();
 
 		if ( $object instanceof \WP_Post ) {
@@ -113,6 +122,45 @@ final class Frontend {
 			}
 		}
 
+		return false;
+	}
+
+	/**
+	 * Whether the request is on the domain or subdomain of a hidden language.
+	 *
+	 * Polylang no longer finds the hidden language from the host and falls back to the default language, on the same
+	 * host: the host of each hidden language is looked up here.
+	 *
+	 * @param string[] $hidden Hidden language slugs.
+	 * @return bool
+	 */
+	private function is_hidden_host( array $hidden ) {
+		$polylang = Plugin::polylang();
+		$links    = $polylang && isset( $polylang->links_model ) ? $polylang->links_model : null;
+		if ( ! $links instanceof \PLL_Links_Abstract_Domain || ! function_exists( 'pll_get_requested_url' ) ) {
+			return false;
+		}
+
+		$host = wp_parse_url( pll_get_requested_url(), PHP_URL_HOST );
+		$home = wp_parse_url( $links->home, PHP_URL_HOST );
+		if ( ! is_string( $host ) || ! is_string( $home ) ) {
+			return false;
+		}
+		$host = strtolower( $host );
+		$home = strtolower( $home );
+
+		// Domains: the hosts come from the options, hidden languages included. Subdomains: built from the language
+		// list, which no longer has the hidden languages, so their host is rebuilt from the slug.
+		$hosts = method_exists( $links, 'get_hosts' ) ? (array) $links->get_hosts() : array();
+
+		foreach ( $hidden as $slug ) {
+			$language_host = isset( $hosts[ $slug ] ) && is_string( $hosts[ $slug ] ) && '' !== $hosts[ $slug ]
+				? $hosts[ $slug ]
+				: wp_parse_url( $links->add_language_to_link( $links->home . '/', $slug ), PHP_URL_HOST );
+			if ( is_string( $language_host ) && strtolower( $language_host ) !== $home && strtolower( $language_host ) === $host ) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

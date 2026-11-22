@@ -3,7 +3,8 @@
  *
  * No build step: plain ES5 with the wp.* globals. Adds the `efplLanguages` attribute to every block type and a
  * panel in the block settings to choose the languages in which the block is shown. No language selected means
- * every language.
+ * every language. When the module is switched off (`config.panel` false), only the attribute is added, so that the
+ * languages already saved in the blocks are kept.
  */
 ( function ( wp, config ) {
 	'use strict';
@@ -89,6 +90,10 @@
 			);
 		};
 	}, 'withEfplLanguagesPanel' );
+
+	if ( config && false === config.panel ) {
+		return;
+	}
 
 	wp.hooks.addFilter( 'editor.BlockEdit', 'extensions-for-polylang/languages-panel', withLanguagesPanel );
 }( window.wp, window.extensionsForPolylangBlocks ) );

@@ -41,11 +41,11 @@ final class Posts_Controller {
 	private $inserted_posts = array();
 
 	/**
-	 * Post type created by the inner request that is running.
+	 * Inner request that is running.
 	 *
-	 * @var string
+	 * @var WP_REST_Request|null
 	 */
-	private $watched_type = '';
+	private $inner_request;
 
 	/**
 	 * Hooked to `rest_api_init`.
@@ -177,14 +177,17 @@ final class Posts_Controller {
 			$inner = new WP_REST_Request( 'POST', $route );
 			$inner->set_body_params( $fields );
 
-			// The core controller inserts the post before it saves meta and REST fields: a later failure still leaves
-			// the post behind, so every insert of this inner request is recorded for the rollback.
+			// The core controller inserts the post before it saves terms, meta and REST fields: a later failure still
+			// leaves the post behind. The controller announces its insert with `rest_insert_{$post_type}`, with the
+			// request it serves: only the post of this inner request is recorded for the rollback, not the posts that
+			// other code inserts meanwhile.
 			$this->inserted_posts = array();
-			$this->watched_type   = $post_type;
-			add_action( 'wp_insert_post', array( $this, 'record_inserted_post' ), 10, 3 );
+			$this->inner_request  = $inner;
+			add_action( 'rest_insert_' . $post_type, array( $this, 'record_inserted_post' ), 1, 3 );
 			$response = rest_do_request( $inner );
-			remove_action( 'wp_insert_post', array( $this, 'record_inserted_post' ), 10 );
-			$inserted = array_merge( $inserted, $this->inserted_posts );
+			remove_action( 'rest_insert_' . $post_type, array( $this, 'record_inserted_post' ), 1 );
+			$this->inner_request = null;
+			$inserted            = array_merge( $inserted, $this->inserted_posts );
 
 			if ( $response->is_error() ) {
 				$error  = $response->as_error();
@@ -240,16 +243,16 @@ final class Posts_Controller {
 	}
 
 	/**
-	 * Records a post inserted by the running inner request, for the rollback.
+	 * Records the post inserted by the running inner request, for the rollback. Hooked to `rest_insert_{$post_type}`.
 	 *
-	 * @param int      $post_id Post ID.
-	 * @param \WP_Post $post    Post.
-	 * @param bool     $update  Whether this is an update.
+	 * @param \WP_Post         $post     Post.
+	 * @param WP_REST_Request $request  Request served by the controller.
+	 * @param bool            $creating Whether the post is created.
 	 * @return void
 	 */
-	public function record_inserted_post( $post_id, $post, $update ) {
-		if ( ! $update && $post instanceof \WP_Post && $post->post_type === $this->watched_type ) {
-			$this->inserted_posts[] = (int) $post_id;
+	public function record_inserted_post( $post, $request, $creating ) {
+		if ( $creating && $post instanceof \WP_Post && null !== $this->inner_request && $request === $this->inner_request ) {
+			$this->inserted_posts[] = (int) $post->ID;
 		}
 	}
 

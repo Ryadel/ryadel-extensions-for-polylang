@@ -181,8 +181,8 @@ final class Status_Controller {
 		$result    = Status::untranslated( $missing, $post_types, $request['from'], $status, $page, $per_page );
 		$max_pages = (int) ceil( $result['total'] / max( 1, $per_page ) );
 
-		// Same answer as the core post collections for a page past the end.
-		if ( $page > 1 && $page > $max_pages ) {
+		// Same answer as the core post collections for a page past the end; an empty result is never an error.
+		if ( $page > 1 && $page > $max_pages && $result['total'] > 0 ) {
 			return new WP_Error(
 				'rest_post_invalid_page_number',
 				__( 'The page number requested is larger than the number of pages available.', 'extensions-for-polylang' ),
