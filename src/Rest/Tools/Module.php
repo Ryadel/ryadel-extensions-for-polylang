@@ -41,6 +41,11 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function register() {
-		// Implemented in M2 and M3.
+		add_action(
+			'rest_api_init',
+			static function () {
+				( new Posts_Controller() )->register_routes();
+			}
+		);
 	}
 }

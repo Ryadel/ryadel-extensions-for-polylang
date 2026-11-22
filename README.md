@@ -1,6 +1,6 @@
 # Extensions for Polylang
 
-Extensions for the free version of [Polylang](https://wordpress.org/plugins/polylang/):
+A useful set of extensions for the free version of [Polylang](https://wordpress.org/plugins/polylang/):
 
 - **REST API**: `lang` and `translations` fields on the core endpoints of posts and terms, a `lang` filter on
   collections, a post created together with its translations in a single request, and the translation status of the
