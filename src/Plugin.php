@@ -29,7 +29,8 @@ final class Plugin {
 	private $modules = array();
 
 	/**
-	 * Hooked to `pll_init`.
+	 * Hooked to `pll_model_init`. The Polylang API functions (`pll_*`) are not loaded yet: modules only add hooks in
+	 * `register()`, or use the model through `Plugin::polylang()`.
 	 *
 	 * @return void
 	 */
@@ -48,6 +49,16 @@ final class Plugin {
 	 */
 	public static function instance() {
 		return self::$instance;
+	}
+
+	/**
+	 * The Polylang object of the current context (`PLL_Frontend`, `PLL_Admin`, `PLL_Settings`, `PLL_REST_Request`).
+	 * Same as `PLL()`, which is not available yet when the plugin boots.
+	 *
+	 * @return object|null
+	 */
+	public static function polylang() {
+		return isset( $GLOBALS['polylang'] ) && is_object( $GLOBALS['polylang'] ) ? $GLOBALS['polylang'] : null;
 	}
 
 	/**

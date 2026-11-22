@@ -50,10 +50,11 @@ spl_autoload_register(
 );
 
 /*
- * Polylang fires `pll_init` once it is ready, on `plugins_loaded`. It doesn't when the site has no language yet: the
- * plugin then stays idle, like Polylang itself.
+ * Polylang fires `pll_model_init` on `plugins_loaded`, right after creating its model and before it detects the
+ * current language, so modules can still filter the list of languages. It doesn't fire on the front end when the
+ * site has no language yet: the plugin then stays idle, like Polylang itself.
  */
-add_action( 'pll_init', array( 'Ryadel\\ExtensionsForPolylang\\Plugin', 'boot' ) );
+add_action( 'pll_model_init', array( 'Ryadel\\ExtensionsForPolylang\\Plugin', 'boot' ) );
 add_action( 'admin_notices', 'extensions_for_polylang_requirements_notice' );
 
 /**
