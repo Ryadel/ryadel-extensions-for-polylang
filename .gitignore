@@ -1,0 +1,11 @@
+# IDE and OS state
+.vs/
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Dependencies and build output
+/vendor/
+/node_modules/
