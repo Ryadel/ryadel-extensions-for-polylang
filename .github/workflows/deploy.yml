@@ -1,0 +1,33 @@
+# Deploys the plugin to the WordPress.org plugin directory when a GitHub release is published.
+# Requires the repository secrets SVN_USERNAME and SVN_PASSWORD (WordPress.org SVN credentials).
+name: Deploy to WordPress.org
+
+on:
+  release:
+    # Published releases only; pre-releases are not deployed.
+    types: [released]
+
+jobs:
+  deploy:
+    name: Deploy to WordPress.org
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: WordPress plugin deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: extensions-for-polylang
+
+      - name: Attach the plugin ZIP to the GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: ${{ steps.deploy.outputs.zip-path }}
