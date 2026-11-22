@@ -245,7 +245,7 @@ final class Posts_Controller {
 	/**
 	 * Records the post inserted by the running inner request, for the rollback. Hooked to `rest_insert_{$post_type}`.
 	 *
-	 * @param \WP_Post         $post     Post.
+	 * @param \WP_Post        $post     Post.
 	 * @param WP_REST_Request $request  Request served by the controller.
 	 * @param bool            $creating Whether the post is created.
 	 * @return void

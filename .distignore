@@ -7,3 +7,4 @@
 .gitattributes
 .editorconfig
 README.md
+phpcs.xml.dist

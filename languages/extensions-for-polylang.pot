@@ -1,0 +1,322 @@
+# Copyright (C) 2026 Ryadel
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Extensions for Polylang 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/extensions-for-polylang\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-22T19:38:34+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: extensions-for-polylang\n"
+
+#. Plugin Name of the plugin
+#: extensions-for-polylang.php
+#: src/Admin/Settings_Page.php:60
+#: src/Admin/Settings_Page.php:141
+msgid "Extensions for Polylang"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: extensions-for-polylang.php
+msgid "https://github.com/Ryadel/extensions-for-polylang"
+msgstr ""
+
+#. Description of the plugin
+#: extensions-for-polylang.php
+msgid "Extends Polylang: languages and translations in the WordPress REST API, inactive languages, per-language blocks."
+msgstr ""
+
+#. Author of the plugin
+#: extensions-for-polylang.php
+msgid "Ryadel"
+msgstr ""
+
+#. Author URI of the plugin
+#: extensions-for-polylang.php
+msgid "https://www.ryadel.com/"
+msgstr ""
+
+#: extensions-for-polylang.php:67
+msgid "Extensions for Polylang requires the Polylang plugin."
+msgstr ""
+
+#. translators: 1: required Polylang version, 2: installed Polylang version.
+#: extensions-for-polylang.php:72
+#, php-format
+msgid "Extensions for Polylang requires Polylang %1$s or later (installed: %2$s)."
+msgstr ""
+
+#: src/Admin/Settings_Page.php:61
+msgid "Extensions"
+msgstr ""
+
+#: src/Admin/Settings_Page.php:124
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/Settings_Page.php:144
+msgid "Modules"
+msgstr ""
+
+#: src/Admin/Settings_Page.php:156
+msgid "Translation coverage"
+msgstr ""
+
+#: src/Admin/Settings_Page.php:181
+msgid "Provided by Polylang Pro."
+msgstr ""
+
+#: src/Admin/Settings_Page.php:214
+msgid "No translated content type."
+msgstr ""
+
+#: src/Admin/Settings_Page.php:218
+msgid "All statuses except trash. Below each count, the posts in the default language that are not translated yet."
+msgstr ""
+
+#: src/Admin/Settings_Page.php:223
+msgid "Content type"
+msgstr ""
+
+#: src/Admin/Settings_Page.php:227
+msgid "Without language"
+msgstr ""
+
+#. translators: %s: number of posts.
+#: src/Admin/Settings_Page.php:270
+#, php-format
+msgid "%s to translate"
+msgid_plural "%s to translate"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/BlockVisibility/Module.php:30
+msgid "Per-language blocks"
+msgstr ""
+
+#: src/BlockVisibility/Module.php:37
+msgid "Shows a block only in the languages you pick, so a single header, footer or navigation works for every language."
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:54
+msgid "Hide this language from visitors"
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:54
+msgid "Show this language to visitors"
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:56
+msgid "Deactivate"
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:56
+msgid "Activate"
+msgstr ""
+
+#. translators: %s: comma-separated list of language names.
+#: src/InactiveLanguages/Admin.php:104
+#, php-format
+msgid "Inactive languages, hidden from visitors: %s. Editors still see them on the site."
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:124
+msgid "The language does not exist."
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:127
+msgid "The default language cannot be deactivated. Choose another default language first."
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:175
+msgid "Language activated."
+msgstr ""
+
+#: src/InactiveLanguages/Admin.php:175
+msgid "Language deactivated: visitors no longer see it."
+msgstr ""
+
+#: src/InactiveLanguages/Module.php:31
+msgid "Inactive languages"
+msgstr ""
+
+#: src/InactiveLanguages/Module.php:38
+msgid "Hides a language from visitors while you are still translating it."
+msgstr ""
+
+#: src/Rest/Fields/Fields.php:73
+msgid "Language slug. Changing it moves the item to another language."
+msgstr ""
+
+#: src/Rest/Fields/Fields.php:101
+msgid "IDs of the translations keyed by language slug, the item itself included. Writing it replaces the whole translation group."
+msgstr ""
+
+#: src/Rest/Fields/Language_Filter.php:54
+msgid "Limit results to the items in a language."
+msgstr ""
+
+#: src/Rest/Fields/Module.php:30
+msgid "REST API: languages and translations"
+msgstr ""
+
+#: src/Rest/Fields/Module.php:37
+msgid "Adds the lang and translations fields to posts and terms in the REST API, and filters collections by language."
+msgstr ""
+
+#: src/Rest/Tools/Module.php:30
+msgid "REST API: translation tools"
+msgstr ""
+
+#: src/Rest/Tools/Module.php:37
+msgid "Creates a post together with its translations in a single request, and reports which content is not translated yet."
+msgstr ""
+
+#: src/Rest/Tools/Posts_Controller.php:73
+msgid "Post type."
+msgstr ""
+
+#: src/Rest/Tools/Posts_Controller.php:78
+msgid "Whether to create the terms that match no existing term in any language."
+msgstr ""
+
+#: src/Rest/Tools/Posts_Controller.php:83
+msgid "One object per language, keyed by language slug, with the fields accepted by the core endpoint of the post type. Terms can be given by slug or name."
+msgstr ""
+
+#: src/Rest/Tools/Posts_Controller.php:107
+#: src/Rest/Tools/Status_Controller.php:95
+msgid "The post type does not exist, is not shown in the REST API or is not translated."
+msgstr ""
+
+#: src/Rest/Tools/Posts_Controller.php:115
+msgid "Sorry, you are not allowed to create posts as this user."
+msgstr ""
+
+#. translators: 1: field name, 2: language slug.
+#: src/Rest/Tools/Posts_Controller.php:323
+#, php-format
+msgid "%1$s (%2$s) must be a list of term IDs, slugs or names."
+msgstr ""
+
+#. translators: %s: list of taxonomies and terms.
+#: src/Rest/Tools/Posts_Controller.php:351
+#, php-format
+msgid "Terms not found (%s). Send create_terms=true to create them."
+msgstr ""
+
+#. translators: %s: taxonomy.
+#: src/Rest/Tools/Posts_Controller.php:365
+#, php-format
+msgid "Sorry, you are not allowed to create terms in %s."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:45
+msgid "Limit to one post type."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:49
+msgid "Post status; \"any\" counts every status but trash and auto-draft."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:55
+msgid "List the posts without a translation in this language."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:60
+msgid "With missing: only the posts in this language."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:65
+msgid "Page of the list."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:71
+msgid "Posts per page of the list."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:103
+msgid "Sorry, you are not allowed to see the translation status."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:124
+msgid "The from parameter needs missing."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:130
+msgid "The from and missing languages must differ."
+msgstr ""
+
+#: src/Rest/Tools/Status_Controller.php:188
+msgid "The page number requested is larger than the number of pages available."
+msgstr ""
+
+#. translators: %s: language slug.
+#: src/Services/Translations.php:127
+#: src/Services/Translations.php:237
+#, php-format
+msgid "Unknown language: %s."
+msgstr ""
+
+#. translators: 1: language slug, 2: object ID.
+#: src/Services/Translations.php:143
+#, php-format
+msgid "The translation in %1$s already exists (ID %2$d). Unlink it first, or send the new translations in the same request."
+msgstr ""
+
+#: src/Services/Translations.php:167
+msgid "The language could not be set."
+msgstr ""
+
+#: src/Services/Translations.php:224
+msgid "Set the language of this item before linking its translations."
+msgstr ""
+
+#. translators: %s: language slug.
+#: src/Services/Translations.php:242
+#, php-format
+msgid "The %s translation must be an ID."
+msgstr ""
+
+#. translators: 1: language slug, 2: object ID.
+#: src/Services/Translations.php:250
+#, php-format
+msgid "This item is the %1$s translation: %1$s cannot point to ID %2$d."
+msgstr ""
+
+#. translators: %s: language slug.
+#: src/Services/Translations.php:262
+#, php-format
+msgid "This item cannot be its own %s translation."
+msgstr ""
+
+#. translators: %d: object ID.
+#: src/Services/Translations.php:267
+#, php-format
+msgid "ID %d does not exist or is of a different type."
+msgstr ""
+
+#. translators: 1: object ID, 2: language slug.
+#: src/Services/Translations.php:272
+#, php-format
+msgid "ID %1$d is not in %2$s."
+msgstr ""
+
+#. translators: %d: object ID.
+#: src/Services/Translations.php:336
+#, php-format
+msgid "Sorry, you are not allowed to edit the translation with ID %d."
+msgstr ""
+
+#: js/editor.js:70
+msgid "Languages"
+msgstr ""
+
+#: js/editor.js:76
+msgid "Show this block only in the selected languages. With none selected, it is shown in every language."
+msgstr ""

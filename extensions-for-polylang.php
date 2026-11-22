@@ -3,7 +3,7 @@
  * Plugin Name:       Extensions for Polylang
  * Plugin URI:        https://github.com/Ryadel/extensions-for-polylang
  * Description:       Extends Polylang: languages and translations in the WordPress REST API, inactive languages, per-language blocks.
- * Version:           0.1.0
+ * Version:           1.0.0
  * Requires at least: 6.8
  * Requires PHP:      7.4
  * Author:            Ryadel
@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 defined( 'ABSPATH' ) || exit;
 
-const EXTENSIONS_FOR_POLYLANG_VERSION      = '0.1.0';
+const EXTENSIONS_FOR_POLYLANG_VERSION      = '1.0.0';
 const EXTENSIONS_FOR_POLYLANG_FILE         = __FILE__;
 const EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG = '3.9';
 

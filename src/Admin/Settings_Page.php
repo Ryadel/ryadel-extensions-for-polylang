@@ -205,6 +205,7 @@ final class Settings_Page {
 				}
 			)
 		);
+
 		$languages = Translations::language_slugs();
 		$default   = pll_default_language( 'slug' );
 		$counts    = Status::counts( $post_types );
@@ -236,28 +237,7 @@ final class Settings_Page {
 								<?php echo esc_html( number_format_i18n( $data['languages'][ $slug ]['count'] ) ); ?>
 								<?php
 								$missing = $slug !== $default && isset( $data['languages'][ $default ]['untranslated'][ $slug ] ) ? $data['languages'][ $default ]['untranslated'][ $slug ] : 0;
-								if ( $missing > 0 && 'attachment' === $post_type ) {
-									printf(
-										'<br />%s',
-										/* translators: %s: number of posts. */
-										esc_html( sprintf( _n( '%s to translate', '%s to translate', $missing, 'extensions-for-polylang' ), number_format_i18n( $missing ) ) )
-									);
-								} elseif ( $missing > 0 ) {
-									$url = add_query_arg(
-										array(
-											'post_type'       => $post_type,
-											'lang'            => $default,
-											'untranslated_in' => $slug,
-										),
-										admin_url( 'edit.php' )
-									);
-									printf(
-										'<br /><a href="%s">%s</a>',
-										esc_url( $url ),
-										/* translators: %s: number of posts. */
-										esc_html( sprintf( _n( '%s to translate', '%s to translate', $missing, 'extensions-for-polylang' ), number_format_i18n( $missing ) ) )
-									);
-								}
+								$this->render_missing( $post_type, $slug, $default, $missing );
 								?>
 							</td>
 						<?php endforeach; ?>
@@ -268,6 +248,41 @@ final class Settings_Page {
 		</table>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Prints the number of posts still to translate in a coverage cell, linked to the filtered post list.
+	 *
+	 * The media library does not keep the list filters, so attachments get the number without a link.
+	 *
+	 * @param string $post_type    Post type.
+	 * @param string $slug         Language of the column.
+	 * @param string $default_lang Default language.
+	 * @param int    $missing      Posts in the default language without a translation in `$slug`.
+	 * @return void
+	 */
+	private function render_missing( $post_type, $slug, $default_lang, $missing ) {
+		if ( $missing <= 0 ) {
+			return;
+		}
+
+		/* translators: %s: number of posts. */
+		$label = sprintf( _n( '%s to translate', '%s to translate', $missing, 'extensions-for-polylang' ), number_format_i18n( $missing ) );
+
+		if ( 'attachment' === $post_type ) {
+			echo '<br />' . esc_html( $label );
+			return;
+		}
+
+		$url = add_query_arg(
+			array(
+				'post_type'       => $post_type,
+				'lang'            => $default_lang,
+				'untranslated_in' => $slug,
+			),
+			admin_url( 'edit.php' )
+		);
+		printf( '<br /><a href="%s">%s</a>', esc_url( $url ), esc_html( $label ) );
 	}
 
 	/**
