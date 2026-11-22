@@ -41,6 +41,6 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function register() {
-		// Implemented in M5.
+		( new Blocks() )->register();
 	}
 }
