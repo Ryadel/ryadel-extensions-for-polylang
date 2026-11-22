@@ -34,6 +34,20 @@ final class Posts_Controller {
 	private $created_terms = array();
 
 	/**
+	 * IDs of the posts inserted by the inner request that is running, whether it succeeds or not.
+	 *
+	 * @var int[]
+	 */
+	private $inserted_posts = array();
+
+	/**
+	 * Post type created by the inner request that is running.
+	 *
+	 * @var string
+	 */
+	private $watched_type = '';
+
+	/**
 	 * Hooked to `rest_api_init`.
 	 *
 	 * @return void
@@ -119,13 +133,18 @@ final class Posts_Controller {
 		$route        = rest_get_route_for_post_type_items( $post_type );
 		$taxonomies   = $this->taxonomy_fields( $post_type );
 
-		// Every term is checked before anything is created.
+		// The terms are read and checked once, before anything is created.
+		$terms = $this->parse_terms( $translations, $taxonomies );
+		if ( is_wp_error( $terms ) ) {
+			return $terms;
+		}
+
 		$missing = array();
-		foreach ( $translations as $lang => $fields ) {
-			foreach ( $taxonomies as $field => $taxonomy ) {
-				foreach ( $this->term_strings( $fields, $field ) as $value ) {
-					if ( 0 === Terms::find( $taxonomy, $value, $lang ) ) {
-						$missing[ $taxonomy ][ $value ] = $value;
+		foreach ( $terms as $lang => $by_field ) {
+			foreach ( $by_field as $field => $values ) {
+				foreach ( $values as $value ) {
+					if ( is_string( $value ) && 0 === Terms::find( $taxonomies[ $field ], $value, $lang ) ) {
+						$missing[ $taxonomies[ $field ] ][ $value ] = $value;
 					}
 				}
 			}
@@ -138,13 +157,14 @@ final class Posts_Controller {
 		$this->created_terms = array();
 		add_action( 'created_term', array( $this, 'record_created_term' ), 10, 3 );
 
-		$created = array();
-		$posts   = array();
-		$error   = null;
-		$failed  = '';
+		$created  = array();
+		$inserted = array();
+		$posts    = array();
+		$error    = null;
+		$failed   = '';
 
 		foreach ( $translations as $lang => $fields ) {
-			$fields = $this->resolve_terms( (array) $fields, $taxonomies, $lang );
+			$fields = $this->resolve_terms( (array) $fields, $terms[ $lang ], $taxonomies, $lang, $create_terms );
 			if ( is_wp_error( $fields ) ) {
 				$error  = $fields;
 				$failed = $lang;
@@ -156,7 +176,15 @@ final class Posts_Controller {
 
 			$inner = new WP_REST_Request( 'POST', $route );
 			$inner->set_body_params( $fields );
+
+			// The core controller inserts the post before it saves meta and REST fields: a later failure still leaves
+			// the post behind, so every insert of this inner request is recorded for the rollback.
+			$this->inserted_posts = array();
+			$this->watched_type   = $post_type;
+			add_action( 'wp_insert_post', array( $this, 'record_inserted_post' ), 10, 3 );
 			$response = rest_do_request( $inner );
+			remove_action( 'wp_insert_post', array( $this, 'record_inserted_post' ), 10 );
+			$inserted = array_merge( $inserted, $this->inserted_posts );
 
 			if ( $response->is_error() ) {
 				$error  = $response->as_error();
@@ -179,7 +207,7 @@ final class Posts_Controller {
 		remove_action( 'created_term', array( $this, 'record_created_term' ), 10 );
 
 		if ( null !== $error ) {
-			$this->rollback( $created );
+			$this->rollback( array_unique( array_merge( array_values( $created ), $inserted ) ) );
 			return $this->with_language( $error, $failed );
 		}
 
@@ -212,6 +240,20 @@ final class Posts_Controller {
 	}
 
 	/**
+	 * Records a post inserted by the running inner request, for the rollback.
+	 *
+	 * @param int      $post_id Post ID.
+	 * @param \WP_Post $post    Post.
+	 * @param bool     $update  Whether this is an update.
+	 * @return void
+	 */
+	public function record_inserted_post( $post_id, $post, $update ) {
+		if ( ! $update && $post instanceof \WP_Post && $post->post_type === $this->watched_type ) {
+			$this->inserted_posts[] = (int) $post_id;
+		}
+	}
+
+	/**
 	 * REST fields of the taxonomies of a post type.
 	 *
 	 * @param string $post_type Post type.
@@ -228,22 +270,57 @@ final class Posts_Controller {
 	}
 
 	/**
-	 * Strings (slugs or names) given in a taxonomy field.
+	 * Reads the taxonomy fields of every language. Each must be a list of term IDs (integers or digit strings) or of
+	 * non-empty strings (slugs or names); anything else is refused before anything is created.
 	 *
-	 * @param mixed  $fields Fields of one language.
-	 * @param string $field  Taxonomy field.
-	 * @return string[]
+	 * @param array    $translations Fields keyed by language slug.
+	 * @param string[] $taxonomies   Taxonomy names keyed by REST field.
+	 * @return array|WP_Error Values keyed by language and field: integers for IDs, trimmed strings for slugs or names.
 	 */
-	private function term_strings( $fields, $field ) {
-		if ( ! is_array( $fields ) || ! isset( $fields[ $field ] ) || ! is_array( $fields[ $field ] ) ) {
-			return array();
-		}
-		return array_values(
-			array_filter(
-				$fields[ $field ],
-				static function ( $value ) {
-					return is_string( $value ) && ! is_numeric( $value ) && '' !== trim( $value );
+	private function parse_terms( array $translations, array $taxonomies ) {
+		$out = array();
+		foreach ( $translations as $lang => $fields ) {
+			$out[ $lang ] = array();
+			foreach ( $taxonomies as $field => $taxonomy ) {
+				if ( ! is_array( $fields ) || ! array_key_exists( $field, $fields ) ) {
+					continue;
 				}
+				if ( ! is_array( $fields[ $field ] ) ) {
+					return $this->invalid_terms( $lang, $field );
+				}
+				$values = array();
+				foreach ( $fields[ $field ] as $value ) {
+					if ( is_int( $value ) && $value > 0 ) {
+						$values[] = $value;
+					} elseif ( is_string( $value ) && ctype_digit( $value ) && (int) $value > 0 ) {
+						$values[] = (int) $value;
+					} elseif ( is_string( $value ) && '' !== trim( $value ) ) {
+						$values[] = trim( $value );
+					} else {
+						return $this->invalid_terms( $lang, $field );
+					}
+				}
+				$out[ $lang ][ $field ] = $values;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Error for a malformed taxonomy field.
+	 *
+	 * @param string $lang  Language slug.
+	 * @param string $field Taxonomy field.
+	 * @return WP_Error
+	 */
+	private function invalid_terms( $lang, $field ) {
+		return new WP_Error(
+			'efpl_invalid_terms',
+			/* translators: 1: field name, 2: language slug. */
+			sprintf( __( '%1$s (%2$s) must be a list of term IDs, slugs or names.', 'extensions-for-polylang' ), $field, $lang ),
+			array(
+				'status' => 400,
+				'lang'   => $lang,
 			)
 		);
 	}
@@ -292,27 +369,32 @@ final class Posts_Controller {
 	}
 
 	/**
-	 * Replaces the slugs and names of the taxonomy fields with term IDs, creating the missing terms.
+	 * Replaces the taxonomy fields with term IDs, creating the missing terms when allowed.
 	 *
-	 * @param array    $fields     Fields of one language.
-	 * @param string[] $taxonomies Taxonomy names keyed by REST field.
-	 * @param string   $lang       Language slug.
+	 * @param array    $fields       Fields of one language.
+	 * @param array    $terms        Values of this language from `parse_terms()`, keyed by field.
+	 * @param string[] $taxonomies   Taxonomy names keyed by REST field.
+	 * @param string   $lang         Language slug.
+	 * @param bool     $create_terms Whether the client asked to create missing terms.
 	 * @return array|WP_Error
 	 */
-	private function resolve_terms( array $fields, array $taxonomies, $lang ) {
-		foreach ( $taxonomies as $field => $taxonomy ) {
-			if ( ! isset( $fields[ $field ] ) || ! is_array( $fields[ $field ] ) ) {
-				continue;
-			}
-			$ids = array();
-			foreach ( $fields[ $field ] as $value ) {
-				if ( is_numeric( $value ) ) {
-					$ids[] = (int) $value;
+	private function resolve_terms( array $fields, array $terms, array $taxonomies, $lang, $create_terms ) {
+		foreach ( $terms as $field => $values ) {
+			$taxonomy = $taxonomies[ $field ];
+			$ids      = array();
+			foreach ( $values as $value ) {
+				if ( is_int( $value ) ) {
+					$ids[] = $value;
 					continue;
 				}
-				$id = Terms::find( $taxonomy, (string) $value, $lang );
+				$id = Terms::find( $taxonomy, $value, $lang );
 				if ( 0 === $id ) {
-					$id = Terms::create( $taxonomy, (string) $value, $lang );
+					// Checked again where the term is inserted, not only in the preliminary check.
+					$error = $this->check_missing_terms( array( $taxonomy => array( $value => $value ) ), $create_terms );
+					if ( is_wp_error( $error ) ) {
+						return $error;
+					}
+					$id = Terms::create( $taxonomy, $value, $lang );
 					if ( is_wp_error( $id ) ) {
 						return $id;
 					}

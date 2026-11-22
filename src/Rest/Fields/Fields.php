@@ -118,9 +118,19 @@ final class Fields {
 	 * @return true|WP_Error
 	 */
 	private static function update_language( $type, $item, $value, $request ) {
+		$id           = self::item_id( $type, $item );
+		$translations = $request instanceof WP_REST_Request ? $request->get_param( 'translations' ) : null;
+
+		if ( null !== $translations && Translations::is_language( $value ) && Translations::get_language( $type, $id ) !== $value ) {
+			// The new group is checked against the new language before anything is written: a 400 changes nothing.
+			$plan = Translations::prepare_translations( $type, $id, (array) $translations, $value );
+			if ( is_wp_error( $plan ) ) {
+				return $plan;
+			}
+		}
+
 		// When the same request sends the new group, the item may leave its current group.
-		$leave_group = $request instanceof WP_REST_Request && null !== $request->get_param( 'translations' );
-		return Translations::set_language( $type, self::item_id( $type, $item ), $value, $leave_group );
+		return Translations::set_language( $type, $id, $value, null !== $translations );
 	}
 
 	/**

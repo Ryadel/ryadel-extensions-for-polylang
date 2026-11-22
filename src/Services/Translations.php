@@ -186,8 +186,37 @@ final class Translations {
 	 * @return int[]|WP_Error The saved group, keyed by language slug.
 	 */
 	public static function save_translations( $type, $id, array $translations ) {
+		$plan = self::prepare_translations( $type, $id, $translations );
+		if ( is_wp_error( $plan ) ) {
+			return $plan;
+		}
+
+		$saved = self::save_group( $type, $plan['group'] );
+		foreach ( $plan['remainders'] as $rest ) {
+			self::save_group( $type, $rest );
+		}
+
+		return array_map( 'intval', $saved );
+	}
+
+	/**
+	 * Checks a new translation group without writing anything: entries, types, languages, permissions.
+	 *
+	 * Used by `save_translations()`, and before a change of language that comes with a new group, so that an invalid
+	 * group is refused before the language changes.
+	 *
+	 * @param string      $type         Translations::POST or Translations::TERM.
+	 * @param int         $id           Object ID.
+	 * @param array       $translations Object IDs keyed by language slug.
+	 * @param string|null $own          Language of the object; null for its current language.
+	 * @return array|WP_Error {
+	 *     @type int[]   $group      The new group, keyed by language slug.
+	 *     @type int[][] $remainders Rest of each former group, to save again.
+	 * }
+	 */
+	public static function prepare_translations( $type, $id, array $translations, $own = null ) {
 		$id  = (int) $id;
-		$own = self::get_language( $type, $id );
+		$own = null === $own ? self::get_language( $type, $id ) : $own;
 
 		if ( null === $own ) {
 			return new WP_Error(
@@ -201,13 +230,18 @@ final class Translations {
 		$group   = array( $own => $id );
 
 		foreach ( $translations as $slug => $tr_id ) {
-			$slug  = (string) $slug;
-			$tr_id = (int) $tr_id;
+			$slug = (string) $slug;
 
 			if ( ! self::is_language( $slug ) ) {
 				/* translators: %s: language slug. */
 				return self::invalid_translation( sprintf( __( 'Unknown language: %s.', 'extensions-for-polylang' ), $slug ) );
 			}
+
+			if ( ! is_int( $tr_id ) && ! ( is_string( $tr_id ) && ctype_digit( $tr_id ) ) ) {
+				/* translators: %s: language slug. */
+				return self::invalid_translation( sprintf( __( 'The %s translation must be an ID.', 'extensions-for-polylang' ), $slug ) );
+			}
+			$tr_id = (int) $tr_id;
 
 			if ( $slug === $own ) {
 				if ( 0 !== $tr_id && $tr_id !== $id ) {
@@ -245,29 +279,34 @@ final class Translations {
 		 * Polylang unlinks, one by one, every member of the current groups of the listed objects that is not listed:
 		 * unlinking one post would split all of its former translations. The rest of each former group is saved
 		 * again afterwards, so its members stay linked to each other.
+		 *
+		 * IDs are collected without their language keys: two former groups can each lose a member in the same
+		 * language, and both must be checked.
 		 */
-		$leaving    = array();
+		$check      = array_values( array_diff( $group, array( $id ) ) );
 		$remainders = array();
 		foreach ( $group as $member ) {
-			$rest    = array_diff( self::get_translations( $type, $member ), $group );
-			$leaving = array_merge( $leaving, $rest );
+			$rest = array_diff( self::get_translations( $type, $member ), $group );
+			if ( ! $rest ) {
+				continue;
+			}
+			$check = array_merge( $check, array_values( $rest ) );
 			if ( count( $rest ) > 1 ) {
-				$key = $rest;
+				$key = array_values( $rest );
 				sort( $key );
 				$remainders[ implode( ',', $key ) ] = $rest;
 			}
 		}
-		$error = self::check_can_edit( $type, array_unique( array_merge( array_diff( $group, array( $id ) ), $leaving ) ) );
+
+		$error = self::check_can_edit( $type, array_values( array_unique( $check ) ) );
 		if ( is_wp_error( $error ) ) {
 			return $error;
 		}
 
-		$saved = self::save_group( $type, $group );
-		foreach ( $remainders as $rest ) {
-			self::save_group( $type, $rest );
-		}
-
-		return array_map( 'intval', $saved );
+		return array(
+			'group'      => $group,
+			'remainders' => array_values( $remainders ),
+		);
 	}
 
 	/**

@@ -173,11 +173,22 @@ final class Status_Controller {
 	 * @param string          $status     Post status.
 	 * @param string          $missing    Language the translation is missing in.
 	 * @param WP_REST_Request $request    Request.
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response|WP_Error
 	 */
 	private function untranslated( array $post_types, $status, $missing, $request ) {
-		$per_page = (int) $request['per_page'];
-		$result   = Status::untranslated( $missing, $post_types, $request['from'], $status, (int) $request['page'], $per_page );
+		$per_page  = (int) $request['per_page'];
+		$page      = (int) $request['page'];
+		$result    = Status::untranslated( $missing, $post_types, $request['from'], $status, $page, $per_page );
+		$max_pages = (int) ceil( $result['total'] / max( 1, $per_page ) );
+
+		// Same answer as the core post collections for a page past the end.
+		if ( $page > 1 && $page > $max_pages ) {
+			return new WP_Error(
+				'rest_post_invalid_page_number',
+				__( 'The page number requested is larger than the number of pages available.', 'extensions-for-polylang' ),
+				array( 'status' => 400 )
+			);
+		}
 
 		$items = array();
 		foreach ( $result['ids'] as $id ) {
@@ -195,7 +206,7 @@ final class Status_Controller {
 
 		$response = new WP_REST_Response( $items );
 		$response->header( 'X-WP-Total', (string) $result['total'] );
-		$response->header( 'X-WP-TotalPages', (string) (int) ceil( $result['total'] / max( 1, $per_page ) ) );
+		$response->header( 'X-WP-TotalPages', (string) $max_pages );
 		return $response;
 	}
 

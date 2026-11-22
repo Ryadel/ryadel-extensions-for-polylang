@@ -134,9 +134,22 @@ final class Status {
 			)
 		);
 
+		$total = (int) $query->found_posts;
+		if ( $total < 1 && $page > 1 ) {
+			// WP_Query skips the count when the page is empty: count again, to tell a page past the end from no result.
+			$total = self::count(
+				array(
+					'post_type'       => $post_types,
+					'post_status'     => $status,
+					'lang'            => implode( ',', $sources ),
+					'untranslated_in' => $lang,
+				)
+			);
+		}
+
 		return array(
 			'ids'   => array_map( 'intval', $query->posts ),
-			'total' => (int) $query->found_posts,
+			'total' => $total,
 		);
 	}
 
