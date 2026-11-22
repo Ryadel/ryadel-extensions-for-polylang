@@ -48,6 +48,12 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function register() {
-		// Implemented in M1.
+		add_action(
+			'rest_api_init',
+			static function () {
+				( new Fields() )->register();
+				( new Language_Filter() )->register();
+			}
+		);
 	}
 }
