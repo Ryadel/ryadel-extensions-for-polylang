@@ -78,6 +78,12 @@ The blocks are shown in every language. The languages you picked are kept, so th
 
 It needs Polylang 3.9 or later. Without Polylang, or with an older version, it shows a notice to administrators. It also stays idle until Polylang has at least one language.
 
+== Screenshots ==
+
+1. Languages > Extensions: turn each feature on or off, and see how much content is still to translate in each language.
+2. The Languages panel in the block settings: this paragraph is shown only on the English pages.
+3. An inactive language on the Languages page of Polylang: hidden from visitors, still visible to editors.
+
 == Changelog ==
 
 = 1.0.0 =
