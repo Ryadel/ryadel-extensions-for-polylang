@@ -35,7 +35,7 @@ defined( 'ABSPATH' ) || exit;
 
 const EXTENSIONS_FOR_POLYLANG_VERSION      = '1.0.0';
 const EXTENSIONS_FOR_POLYLANG_FILE         = __FILE__;
-const EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG = '3.9';
+const EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG = '3.9.2'; // 3.9.2 fixes an exposure of private post metadata.
 
 spl_autoload_register(
 	static function ( $class_name ) {

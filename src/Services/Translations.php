@@ -94,6 +94,44 @@ final class Translations {
 	}
 
 	/**
+	 * The part of a translation group that the current user may see, for the API responses. Terms are public, as in
+	 * the core REST API; for posts, the other translations are kept only when the user could read them through the
+	 * core REST API. The write logic keeps using the whole group (`get_translations()`).
+	 *
+	 * @param string $type Translations::POST or Translations::TERM.
+	 * @param int    $id   Object ID, always kept: the caller already shows it.
+	 * @return int[] Object IDs keyed by language slug.
+	 */
+	public static function get_visible_translations( $type, $id ) {
+		$group = self::get_translations( $type, $id );
+		if ( self::POST !== $type ) {
+			return $group;
+		}
+		return array_filter(
+			$group,
+			static function ( $tr_id ) use ( $id ) {
+				return (int) $id === $tr_id || self::can_read_post( $tr_id );
+			}
+		);
+	}
+
+	/**
+	 * Whether the current user can read a post, with the rule of the core REST API: a post with a public status
+	 * (attachments take the status of their parent), or the `read_post` capability.
+	 *
+	 * @param int $id Post ID.
+	 * @return bool
+	 */
+	public static function can_read_post( $id ) {
+		$post = get_post( (int) $id );
+		if ( ! $post ) {
+			return false;
+		}
+		$status = get_post_status_object( (string) get_post_status( $post ) );
+		return ( $status && $status->public ) || current_user_can( 'read_post', $post->ID );
+	}
+
+	/**
 	 * Whether the current user can edit an object.
 	 *
 	 * @param string $type Translations::POST or Translations::TERM.

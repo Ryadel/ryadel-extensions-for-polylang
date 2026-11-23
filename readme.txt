@@ -62,6 +62,8 @@ Each request needs the same permissions as the matching core endpoint. The statu
 
 Users who can edit posts see it on the site as usual. Visitors and subscribers get a 404 on its pages, and the language is removed from the language switcher, the hreflang links, browser language detection and the sitemaps. The default language cannot be deactivated.
 
+It only hides the language on the site. The REST API still returns its published posts, as for any other language, so keep content that must stay confidential as drafts or private posts.
+
 = What happens to inactive languages if I deactivate the plugin? =
 
 The language becomes visible again. Its inactive state is saved by Polylang, the same way Polylang Pro saves it, so it applies again when you reactivate the plugin.
@@ -76,7 +78,7 @@ The blocks are shown in every language. The languages you picked are kept, so th
 
 = Why is the plugin not doing anything? =
 
-It needs Polylang 3.9 or later. Without Polylang, or with an older version, it shows a notice to administrators. It also stays idle until Polylang has at least one language.
+It needs Polylang 3.9.2 or later. Without Polylang, or with an older version, it shows a notice to administrators. It also stays idle until Polylang has at least one language.
 
 == Screenshots ==
 

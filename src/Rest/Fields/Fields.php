@@ -90,15 +90,16 @@ final class Fields {
 			$object_types,
 			'translations',
 			array(
+				// Only the translations the user could read: drafts and private posts of others stay hidden.
 				'get_callback'    => static function ( $data ) use ( $type ) {
-					return (object) Translations::get_translations( $type, (int) $data['id'] );
+					return (object) Translations::get_visible_translations( $type, (int) $data['id'] );
 				},
 				'update_callback' => static function ( $value, $item ) use ( $type ) {
 					$saved = Translations::save_translations( $type, self::item_id( $type, $item ), (array) $value );
 					return is_wp_error( $saved ) ? $saved : true;
 				},
 				'schema'          => array(
-					'description'          => __( 'IDs of the translations keyed by language slug, the item itself included. Writing it replaces the whole translation group.', 'extensions-for-polylang' ),
+					'description'          => __( 'IDs of the translations keyed by language slug, the item itself included; only the translations the user can read. Writing it replaces the whole translation group.', 'extensions-for-polylang' ),
 					'type'                 => 'object',
 					'properties'           => $properties,
 					'additionalProperties' => false,

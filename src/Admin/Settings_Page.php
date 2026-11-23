@@ -208,7 +208,8 @@ final class Settings_Page {
 
 		$languages = Translations::language_slugs();
 		$default   = pll_default_language( 'slug' );
-		$counts    = Status::counts( $post_types );
+		// The table shows only what is missing from the default language: 2 * L queries per post type, not L * L + 1.
+		$counts = Status::counts( $post_types, 'any', array( $default ) );
 
 		if ( ! $post_types || ! $languages ) {
 			echo '<p>' . esc_html__( 'No translated content type.', 'extensions-for-polylang' ) . '</p>';

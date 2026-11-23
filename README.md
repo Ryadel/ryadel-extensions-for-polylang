@@ -15,7 +15,7 @@ When Polylang Pro is active, the features it already provides are turned off.
 
 ## Requirements
 
-WordPress 6.8 or later, PHP 7.4 or later, Polylang 3.9 or later.
+WordPress 6.8 or later, PHP 7.4 or later, Polylang 3.9.2 or later.
 
 ## License
 

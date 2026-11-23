@@ -27,11 +27,28 @@ final class Posts_Controller {
 	const REST_NAMESPACE = 'extensions-for-polylang/v1';
 
 	/**
+	 * Most terms accepted in one taxonomy field of one language.
+	 */
+	const MAX_TERMS = 100;
+
+	/**
+	 * Polylang's taxonomies of the translation groups: their terms are created when posts or terms are linked.
+	 */
+	const GROUP_TAXONOMIES = array( 'post_translations', 'term_translations' );
+
+	/**
 	 * IDs of the terms created while the current request runs, by us or by Polylang, keyed by term ID.
 	 *
 	 * @var string[]
 	 */
 	private $created_terms = array();
+
+	/**
+	 * Taxonomies whose new terms are recorded for the rollback, while the current request runs.
+	 *
+	 * @var string[]
+	 */
+	private $term_taxonomies = array();
 
 	/**
 	 * IDs of the posts inserted by the inner request that is running, whether it succeeds or not.
@@ -154,7 +171,8 @@ final class Posts_Controller {
 			return $error;
 		}
 
-		$this->created_terms = array();
+		$this->created_terms   = array();
+		$this->term_taxonomies = array_merge( array_values( $taxonomies ), self::GROUP_TAXONOMIES );
 		add_action( 'created_term', array( $this, 'record_created_term' ), 10, 3 );
 
 		$created  = array();
@@ -231,7 +249,8 @@ final class Posts_Controller {
 	}
 
 	/**
-	 * Records a term created during the request, for the rollback.
+	 * Records a term created during the request, for the rollback: only in the taxonomies of the post type and in
+	 * the translation groups of Polylang. Terms of other taxonomies, created by other code, are not ours.
 	 *
 	 * @param int    $term_id  Term ID.
 	 * @param int    $tt_id    Term taxonomy ID.
@@ -239,7 +258,9 @@ final class Posts_Controller {
 	 * @return void
 	 */
 	public function record_created_term( $term_id, $tt_id, $taxonomy ) {
-		$this->created_terms[ (int) $term_id ] = $taxonomy;
+		if ( in_array( $taxonomy, $this->term_taxonomies, true ) ) {
+			$this->created_terms[ (int) $term_id ] = $taxonomy;
+		}
 	}
 
 	/**
@@ -274,7 +295,8 @@ final class Posts_Controller {
 
 	/**
 	 * Reads the taxonomy fields of every language. Each must be a list of term IDs (integers or digit strings) or of
-	 * non-empty strings (slugs or names); anything else is refused before anything is created.
+	 * non-empty strings (slugs or names), at most MAX_TERMS once duplicates are removed; anything else is refused
+	 * before anything is created.
 	 *
 	 * @param array    $translations Fields keyed by language slug.
 	 * @param string[] $taxonomies   Taxonomy names keyed by REST field.
@@ -302,6 +324,18 @@ final class Posts_Controller {
 					} else {
 						return $this->invalid_terms( $lang, $field );
 					}
+				}
+				$values = array_values( array_unique( $values, SORT_REGULAR ) );
+				if ( count( $values ) > self::MAX_TERMS ) {
+					return new WP_Error(
+						'efpl_too_many_terms',
+						/* translators: 1: field name, 2: language slug, 3: maximum number of terms. */
+						sprintf( __( '%1$s (%2$s) can have at most %3$d terms.', 'extensions-for-polylang' ), $field, $lang, self::MAX_TERMS ),
+						array(
+							'status' => 400,
+							'lang'   => $lang,
+						)
+					);
 				}
 				$out[ $lang ][ $field ] = $values;
 			}
@@ -412,6 +446,10 @@ final class Posts_Controller {
 	/**
 	 * Deletes the posts and the terms created by a failed request.
 	 *
+	 * The posts go first. A recorded term is then deleted only when nothing refers to it any more: no object in the
+	 * term (other code may have given it to another post meanwhile) and no child term. Deleting a term can free
+	 * another one, such as the translation group of the term, hence the passes.
+	 *
 	 * @param int[] $post_ids Post IDs.
 	 * @return void
 	 */
@@ -419,9 +457,25 @@ final class Posts_Controller {
 		foreach ( $post_ids as $post_id ) {
 			wp_delete_post( $post_id, true );
 		}
-		foreach ( $this->created_terms as $term_id => $taxonomy ) {
-			wp_delete_term( $term_id, $taxonomy );
-		}
+
+		$terms = $this->created_terms;
+		do {
+			$deleted = false;
+			foreach ( $terms as $term_id => $taxonomy ) {
+				if ( ! term_exists( $term_id, $taxonomy ) ) {
+					unset( $terms[ $term_id ] );
+					continue;
+				}
+				$objects  = get_objects_in_term( $term_id, $taxonomy );
+				$children = is_taxonomy_hierarchical( $taxonomy ) ? get_term_children( $term_id, $taxonomy ) : array();
+				if ( is_array( $objects ) && ! $objects && is_array( $children ) && ! $children ) {
+					wp_delete_term( $term_id, $taxonomy );
+					unset( $terms[ $term_id ] );
+					$deleted = true;
+				}
+			}
+		} while ( $deleted && $terms );
+
 		$this->created_terms = array();
 	}
 

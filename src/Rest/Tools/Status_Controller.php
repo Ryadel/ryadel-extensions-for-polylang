@@ -20,7 +20,8 @@ defined( 'ABSPATH' ) || exit;
  * `GET extensions-for-polylang/v1/status`: counts by post type and language; with `missing=<lang>`, the paginated
  * list of the posts without a translation in that language.
  *
- * Lists include drafts, so a post type is shown only to users who can edit the posts of others.
+ * Lists include drafts, so a post type is shown only to users who can edit the posts of others. Private posts, and
+ * the translations listed with each post, follow the reading rules of WordPress for the current user.
  */
 final class Status_Controller {
 
@@ -198,7 +199,7 @@ final class Status_Controller {
 				'status'       => get_post_status( $id ),
 				'title'        => html_entity_decode( get_the_title( $id ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
 				'lang'         => Translations::get_language( Translations::POST, $id ),
-				'translations' => (object) Translations::get_translations( Translations::POST, $id ),
+				'translations' => (object) Translations::get_visible_translations( Translations::POST, $id ),
 				'link'         => get_permalink( $id ),
 				'edit_link'    => get_edit_post_link( $id, 'raw' ),
 			);

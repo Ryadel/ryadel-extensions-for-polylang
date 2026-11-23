@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-22T19:38:34+00:00\n"
+"POT-Creation-Date: 2026-11-23T02:07:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: extensions-for-polylang\n"
@@ -71,24 +71,24 @@ msgstr ""
 msgid "Provided by Polylang Pro."
 msgstr ""
 
-#: src/Admin/Settings_Page.php:214
+#: src/Admin/Settings_Page.php:215
 msgid "No translated content type."
 msgstr ""
 
-#: src/Admin/Settings_Page.php:218
+#: src/Admin/Settings_Page.php:219
 msgid "All statuses except trash. Below each count, the posts in the default language that are not translated yet."
 msgstr ""
 
-#: src/Admin/Settings_Page.php:223
+#: src/Admin/Settings_Page.php:224
 msgid "Content type"
 msgstr ""
 
-#: src/Admin/Settings_Page.php:227
+#: src/Admin/Settings_Page.php:228
 msgid "Without language"
 msgstr ""
 
 #. translators: %s: number of posts.
-#: src/Admin/Settings_Page.php:270
+#: src/Admin/Settings_Page.php:271
 #, php-format
 msgid "%s to translate"
 msgid_plural "%s to translate"
@@ -153,8 +153,8 @@ msgstr ""
 msgid "Language slug. Changing it moves the item to another language."
 msgstr ""
 
-#: src/Rest/Fields/Fields.php:101
-msgid "IDs of the translations keyed by language slug, the item itself included. Writing it replaces the whole translation group."
+#: src/Rest/Fields/Fields.php:102
+msgid "IDs of the translations keyed by language slug, the item itself included; only the translations the user can read. Writing it replaces the whole translation group."
 msgstr ""
 
 #: src/Rest/Fields/Language_Filter.php:54
@@ -177,138 +177,144 @@ msgstr ""
 msgid "Creates a post together with its translations in a single request, and reports which content is not translated yet."
 msgstr ""
 
-#: src/Rest/Tools/Posts_Controller.php:73
+#: src/Rest/Tools/Posts_Controller.php:90
 msgid "Post type."
 msgstr ""
 
-#: src/Rest/Tools/Posts_Controller.php:78
+#: src/Rest/Tools/Posts_Controller.php:95
 msgid "Whether to create the terms that match no existing term in any language."
 msgstr ""
 
-#: src/Rest/Tools/Posts_Controller.php:83
+#: src/Rest/Tools/Posts_Controller.php:100
 msgid "One object per language, keyed by language slug, with the fields accepted by the core endpoint of the post type. Terms can be given by slug or name."
 msgstr ""
 
-#: src/Rest/Tools/Posts_Controller.php:107
-#: src/Rest/Tools/Status_Controller.php:95
+#: src/Rest/Tools/Posts_Controller.php:124
+#: src/Rest/Tools/Status_Controller.php:96
 msgid "The post type does not exist, is not shown in the REST API or is not translated."
 msgstr ""
 
-#: src/Rest/Tools/Posts_Controller.php:115
+#: src/Rest/Tools/Posts_Controller.php:132
 msgid "Sorry, you are not allowed to create posts as this user."
 msgstr ""
 
+#. translators: 1: field name, 2: language slug, 3: maximum number of terms.
+#: src/Rest/Tools/Posts_Controller.php:333
+#, php-format
+msgid "%1$s (%2$s) can have at most %3$d terms."
+msgstr ""
+
 #. translators: 1: field name, 2: language slug.
-#: src/Rest/Tools/Posts_Controller.php:323
+#: src/Rest/Tools/Posts_Controller.php:357
 #, php-format
 msgid "%1$s (%2$s) must be a list of term IDs, slugs or names."
 msgstr ""
 
 #. translators: %s: list of taxonomies and terms.
-#: src/Rest/Tools/Posts_Controller.php:351
+#: src/Rest/Tools/Posts_Controller.php:385
 #, php-format
 msgid "Terms not found (%s). Send create_terms=true to create them."
 msgstr ""
 
 #. translators: %s: taxonomy.
-#: src/Rest/Tools/Posts_Controller.php:365
+#: src/Rest/Tools/Posts_Controller.php:399
 #, php-format
 msgid "Sorry, you are not allowed to create terms in %s."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:45
+#: src/Rest/Tools/Status_Controller.php:46
 msgid "Limit to one post type."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:49
+#: src/Rest/Tools/Status_Controller.php:50
 msgid "Post status; \"any\" counts every status but trash and auto-draft."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:55
+#: src/Rest/Tools/Status_Controller.php:56
 msgid "List the posts without a translation in this language."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:60
+#: src/Rest/Tools/Status_Controller.php:61
 msgid "With missing: only the posts in this language."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:65
+#: src/Rest/Tools/Status_Controller.php:66
 msgid "Page of the list."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:71
+#: src/Rest/Tools/Status_Controller.php:72
 msgid "Posts per page of the list."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:103
+#: src/Rest/Tools/Status_Controller.php:104
 msgid "Sorry, you are not allowed to see the translation status."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:124
+#: src/Rest/Tools/Status_Controller.php:125
 msgid "The from parameter needs missing."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:130
+#: src/Rest/Tools/Status_Controller.php:131
 msgid "The from and missing languages must differ."
 msgstr ""
 
-#: src/Rest/Tools/Status_Controller.php:188
+#: src/Rest/Tools/Status_Controller.php:189
 msgid "The page number requested is larger than the number of pages available."
 msgstr ""
 
 #. translators: %s: language slug.
-#: src/Services/Translations.php:127
-#: src/Services/Translations.php:237
+#: src/Services/Translations.php:165
+#: src/Services/Translations.php:275
 #, php-format
 msgid "Unknown language: %s."
 msgstr ""
 
 #. translators: 1: language slug, 2: object ID.
-#: src/Services/Translations.php:143
+#: src/Services/Translations.php:181
 #, php-format
 msgid "The translation in %1$s already exists (ID %2$d). Unlink it first, or send the new translations in the same request."
 msgstr ""
 
-#: src/Services/Translations.php:167
+#: src/Services/Translations.php:205
 msgid "The language could not be set."
 msgstr ""
 
-#: src/Services/Translations.php:224
+#: src/Services/Translations.php:262
 msgid "Set the language of this item before linking its translations."
 msgstr ""
 
 #. translators: %s: language slug.
-#: src/Services/Translations.php:242
+#: src/Services/Translations.php:280
 #, php-format
 msgid "The %s translation must be an ID."
 msgstr ""
 
 #. translators: 1: language slug, 2: object ID.
-#: src/Services/Translations.php:250
+#: src/Services/Translations.php:288
 #, php-format
 msgid "This item is the %1$s translation: %1$s cannot point to ID %2$d."
 msgstr ""
 
 #. translators: %s: language slug.
-#: src/Services/Translations.php:262
+#: src/Services/Translations.php:300
 #, php-format
 msgid "This item cannot be its own %s translation."
 msgstr ""
 
 #. translators: %d: object ID.
-#: src/Services/Translations.php:267
+#: src/Services/Translations.php:305
 #, php-format
 msgid "ID %d does not exist or is of a different type."
 msgstr ""
 
 #. translators: 1: object ID, 2: language slug.
-#: src/Services/Translations.php:272
+#: src/Services/Translations.php:310
 #, php-format
 msgid "ID %1$d is not in %2$s."
 msgstr ""
 
 #. translators: %d: object ID.
-#: src/Services/Translations.php:336
+#: src/Services/Translations.php:374
 #, php-format
 msgid "Sorry, you are not allowed to edit the translation with ID %d."
 msgstr ""

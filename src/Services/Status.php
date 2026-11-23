@@ -14,6 +14,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Counts posts by language and finds the posts that miss a translation, with the `untranslated_in` query var of
  * Polylang 3.9 (the "Untranslated in" filter of the admin post lists).
+ *
+ * Every query sees only the posts the current user could read: private posts need `read_private_posts` on their
+ * post type, unless the user wrote them, as in WordPress. Counts, lists and totals follow the same rule.
  */
 final class Status {
 
@@ -39,16 +42,21 @@ final class Status {
 	 * Counts of each post type: posts per language, posts of each language without a translation in each other
 	 * language, posts without language.
 	 *
-	 * @param string[] $post_types Post types.
-	 * @param string   $status     Post status, or 'any' for every status but trash and auto-draft.
+	 * With L languages that is L * L + 1 queries per post type: `$sources` limits the untranslated counts to some
+	 * source languages, as the admin page does with the default language.
+	 *
+	 * @param string[]      $post_types Post types.
+	 * @param string        $status     Post status, or 'any' for every status but trash and auto-draft.
+	 * @param string[]|null $sources    Languages whose untranslated posts are counted; null for every language.
 	 * @return array {
 	 *     Keyed by post type.
 	 *
 	 *     @type int   $no_language Posts without language.
-	 *     @type array $languages   Keyed by language slug: `count` and `untranslated` (counts keyed by target language).
+	 *     @type array $languages   Keyed by language slug: `count` and `untranslated` (counts keyed by target language,
+	 *                              empty for the languages left out of `$sources`).
 	 * }
 	 */
-	public static function counts( array $post_types, $status = 'any' ) {
+	public static function counts( array $post_types, $status = 'any', $sources = null ) {
 		$slugs = Translations::language_slugs();
 		$out   = array();
 
@@ -57,7 +65,7 @@ final class Status {
 			foreach ( $slugs as $slug ) {
 				$untranslated = array();
 				foreach ( $slugs as $target ) {
-					if ( $target !== $slug ) {
+					if ( $target !== $slug && ( null === $sources || in_array( $slug, $sources, true ) ) ) {
 						$untranslated[ $target ] = self::count(
 							array(
 								'post_type'       => $post_type,
@@ -164,13 +172,14 @@ final class Status {
 	}
 
 	/**
-	 * Runs a query of post IDs.
+	 * Runs a query of post IDs, limited to the posts the current user could read.
 	 *
 	 * @param array $args WP_Query arguments.
 	 * @return WP_Query
 	 */
 	private static function query( array $args ) {
-		return new WP_Query(
+		add_filter( 'posts_where', array( __CLASS__, 'readable_where' ), 10, 2 );
+		$query = new WP_Query(
 			$args + array(
 				'fields'                 => 'ids',
 				'no_found_rows'          => false,
@@ -179,5 +188,40 @@ final class Status {
 				'update_post_term_cache' => false,
 			)
 		);
+		remove_filter( 'posts_where', array( __CLASS__, 'readable_where' ), 10 );
+		return $query;
+	}
+
+	/**
+	 * Leaves out the private posts of others in the post types where the current user cannot read them. WP_Query
+	 * has no such rule for `post_status => any`, nor for several post types at once. Hooked to `posts_where` only
+	 * while `query()` runs.
+	 *
+	 * @param string   $where WHERE clause.
+	 * @param WP_Query $query Query.
+	 * @return string
+	 */
+	public static function readable_where( $where, $query ) {
+		global $wpdb;
+
+		$hidden = array();
+		foreach ( (array) $query->get( 'post_type' ) as $post_type ) {
+			$object = get_post_type_object( $post_type );
+			if ( $object && ! current_user_can( $object->cap->read_private_posts ) ) {
+				$hidden[] = $post_type;
+			}
+		}
+		$statuses = array_values( get_post_stati( array( 'private' => true ) ) );
+		if ( ! $hidden || ! $statuses ) {
+			return $where;
+		}
+
+		$where .= $wpdb->prepare(
+			" AND NOT ( {$wpdb->posts}.post_type IN (" . implode( ', ', array_fill( 0, count( $hidden ), '%s' ) ) . ')' .
+			" AND {$wpdb->posts}.post_status IN (" . implode( ', ', array_fill( 0, count( $statuses ), '%s' ) ) . ')' .
+			" AND {$wpdb->posts}.post_author <> %d )",
+			array_merge( $hidden, $statuses, array( get_current_user_id() ) )
+		);
+		return $where;
 	}
 }
