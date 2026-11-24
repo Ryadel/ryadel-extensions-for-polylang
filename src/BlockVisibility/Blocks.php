@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 final class Blocks {
 
 	const ATTRIBUTE = 'efplLanguages';
-	const SCRIPT    = 'extensions-for-polylang-editor';
+	const SCRIPT    = 'ryadel-extensions-for-polylang-editor';
 
 	/**
 	 * Whether blocks are hidden by language and the editor shows the panel. When false, only the attribute is kept.
@@ -115,14 +115,14 @@ final class Blocks {
 
 		wp_enqueue_script(
 			self::SCRIPT,
-			plugins_url( 'js/editor.js', EXTENSIONS_FOR_POLYLANG_FILE ),
+			plugins_url( 'js/editor.js', RYADEL_EXTENSIONS_FOR_POLYLANG_FILE ),
 			array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-compose', 'wp-element', 'wp-hooks', 'wp-i18n' ),
-			EXTENSIONS_FOR_POLYLANG_VERSION,
+			RYADEL_EXTENSIONS_FOR_POLYLANG_VERSION,
 			true
 		);
 		wp_add_inline_script(
 			self::SCRIPT,
-			'window.extensionsForPolylangBlocks = ' . wp_json_encode(
+			'window.ryadelExtensionsForPolylangBlocks = ' . wp_json_encode(
 				array(
 					'panel'     => $this->enabled,
 					'languages' => $languages,
@@ -130,6 +130,6 @@ final class Blocks {
 			) . ';',
 			'before'
 		);
-		wp_set_script_translations( self::SCRIPT, 'extensions-for-polylang' );
+		wp_set_script_translations( self::SCRIPT, 'ryadel-extensions-for-polylang' );
 	}
 }

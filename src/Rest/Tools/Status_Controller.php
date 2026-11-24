@@ -17,7 +17,7 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `GET extensions-for-polylang/v1/status`: counts by post type and language; with `missing=<lang>`, the paginated
+ * `GET ryadel-extensions-for-polylang/v1/status`: counts by post type and language; with `missing=<lang>`, the paginated
  * list of the posts without a translation in that language.
  *
  * Lists include drafts, so a post type is shown only to users who can edit the posts of others. Private posts, and
@@ -43,33 +43,33 @@ final class Status_Controller {
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 				'args'                => array(
 					'type'     => array(
-						'description' => __( 'Limit to one post type.', 'extensions-for-polylang' ),
+						'description' => __( 'Limit to one post type.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'string',
 					),
 					'status'   => array(
-						'description' => __( 'Post status; "any" counts every status but trash and auto-draft.', 'extensions-for-polylang' ),
+						'description' => __( 'Post status; "any" counts every status but trash and auto-draft.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'string',
 						'enum'        => $statuses,
 						'default'     => 'any',
 					),
 					'missing'  => array(
-						'description' => __( 'List the posts without a translation in this language.', 'extensions-for-polylang' ),
+						'description' => __( 'List the posts without a translation in this language.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'string',
 						'enum'        => $languages,
 					),
 					'from'     => array(
-						'description' => __( 'With missing: only the posts in this language.', 'extensions-for-polylang' ),
+						'description' => __( 'With missing: only the posts in this language.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'string',
 						'enum'        => $languages,
 					),
 					'page'     => array(
-						'description' => __( 'Page of the list.', 'extensions-for-polylang' ),
+						'description' => __( 'Page of the list.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'integer',
 						'default'     => 1,
 						'minimum'     => 1,
 					),
 					'per_page' => array(
-						'description' => __( 'Posts per page of the list.', 'extensions-for-polylang' ),
+						'description' => __( 'Posts per page of the list.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'integer',
 						'default'     => 10,
 						'minimum'     => 1,
@@ -93,7 +93,7 @@ final class Status_Controller {
 		if ( null !== $type && ! in_array( $type, Status::post_types( true ), true ) ) {
 			return new WP_Error(
 				'efpl_invalid_post_type',
-				__( 'The post type does not exist, is not shown in the REST API or is not translated.', 'extensions-for-polylang' ),
+				__( 'The post type does not exist, is not shown in the REST API or is not translated.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -101,7 +101,7 @@ final class Status_Controller {
 		if ( ! $this->post_types( $type ) ) {
 			return new WP_Error(
 				'rest_forbidden',
-				__( 'Sorry, you are not allowed to see the translation status.', 'extensions-for-polylang' ),
+				__( 'Sorry, you are not allowed to see the translation status.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -122,13 +122,13 @@ final class Status_Controller {
 
 		if ( null === $missing ) {
 			if ( null !== $request['from'] ) {
-				return new WP_Error( 'efpl_from_without_missing', __( 'The from parameter needs missing.', 'extensions-for-polylang' ), array( 'status' => 400 ) );
+				return new WP_Error( 'efpl_from_without_missing', __( 'The from parameter needs missing.', 'ryadel-extensions-for-polylang' ), array( 'status' => 400 ) );
 			}
 			return $this->counts( $post_types, $status );
 		}
 
 		if ( $missing === $request['from'] ) {
-			return new WP_Error( 'efpl_same_language', __( 'The from and missing languages must differ.', 'extensions-for-polylang' ), array( 'status' => 400 ) );
+			return new WP_Error( 'efpl_same_language', __( 'The from and missing languages must differ.', 'ryadel-extensions-for-polylang' ), array( 'status' => 400 ) );
 		}
 
 		return $this->untranslated( $post_types, $status, $missing, $request );
@@ -186,7 +186,7 @@ final class Status_Controller {
 		if ( $page > 1 && $page > $max_pages && $result['total'] > 0 ) {
 			return new WP_Error(
 				'rest_post_invalid_page_number',
-				__( 'The page number requested is larger than the number of pages available.', 'extensions-for-polylang' ),
+				__( 'The page number requested is larger than the number of pages available.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => 400 )
 			);
 		}

@@ -12,7 +12,7 @@ use Ryadel\ExtensionsForPolylang\Module as Base_Module;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Endpoints of the `extensions-for-polylang/v1` namespace.
+ * Endpoints of the `ryadel-extensions-for-polylang/v1` namespace.
  */
 final class Module extends Base_Module {
 
@@ -27,14 +27,14 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function title() {
-		return __( 'REST API: translation tools', 'extensions-for-polylang' );
+		return __( 'REST API: translation tools', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function description() {
-		return __( 'Creates a post together with its translations in a single request, and reports which content is not translated yet.', 'extensions-for-polylang' );
+		return __( 'Creates a post together with its translations in a single request, and reports which content is not translated yet.', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**

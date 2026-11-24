@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Settings_Page {
 
-	const SLUG   = 'extensions-for-polylang';
+	const SLUG   = 'ryadel-extensions-for-polylang';
 	const PARENT = 'mlang';
 
 	/**
@@ -46,7 +46,7 @@ final class Settings_Page {
 	public function register() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ), 11 ); // After Polylang, which adds its menu at 10.
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( EXTENSIONS_FOR_POLYLANG_FILE ), array( $this, 'action_links' ) );
+		add_filter( 'plugin_action_links_' . plugin_basename( RYADEL_EXTENSIONS_FOR_POLYLANG_FILE ), array( $this, 'action_links' ) );
 	}
 
 	/**
@@ -57,8 +57,8 @@ final class Settings_Page {
 	public function add_menu() {
 		add_submenu_page(
 			self::PARENT,
-			__( 'Extensions for Polylang', 'extensions-for-polylang' ),
-			__( 'Extensions', 'extensions-for-polylang' ),
+			__( 'Ryadel Extensions for Polylang', 'ryadel-extensions-for-polylang' ),
+			__( 'Extensions', 'ryadel-extensions-for-polylang' ),
 			'manage_options',
 			self::SLUG,
 			array( $this, 'render' )
@@ -121,7 +121,7 @@ final class Settings_Page {
 			sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( admin_url( 'admin.php?page=' . self::SLUG ) ),
-				esc_html__( 'Settings', 'extensions-for-polylang' )
+				esc_html__( 'Settings', 'ryadel-extensions-for-polylang' )
 			)
 		);
 		return $links;
@@ -138,10 +138,10 @@ final class Settings_Page {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Extensions for Polylang', 'extensions-for-polylang' ); ?></h1>
+			<h1><?php esc_html_e( 'Ryadel Extensions for Polylang', 'ryadel-extensions-for-polylang' ); ?></h1>
 			<?php settings_errors(); ?>
 
-			<h2><?php esc_html_e( 'Modules', 'extensions-for-polylang' ); ?></h2>
+			<h2><?php esc_html_e( 'Modules', 'ryadel-extensions-for-polylang' ); ?></h2>
 			<form method="post" action="options.php">
 				<?php settings_fields( self::SLUG ); ?>
 				<input type="hidden" name="<?php echo esc_attr( Settings::OPTION ); ?>[form]" value="1" />
@@ -153,7 +153,7 @@ final class Settings_Page {
 				<?php submit_button(); ?>
 			</form>
 
-			<h2><?php esc_html_e( 'Translation coverage', 'extensions-for-polylang' ); ?></h2>
+			<h2><?php esc_html_e( 'Translation coverage', 'ryadel-extensions-for-polylang' ); ?></h2>
 			<?php $this->render_coverage(); ?>
 		</div>
 		<?php
@@ -178,7 +178,7 @@ final class Settings_Page {
 						<?php
 						echo esc_html( $module->description() );
 						if ( ! $available ) {
-							echo ' <strong>' . esc_html__( 'Provided by Polylang Pro.', 'extensions-for-polylang' ) . '</strong>';
+							echo ' <strong>' . esc_html__( 'Provided by Polylang Pro.', 'ryadel-extensions-for-polylang' ) . '</strong>';
 						}
 						?>
 					</p>
@@ -212,20 +212,20 @@ final class Settings_Page {
 		$counts = Status::counts( $post_types, 'any', array( $default ) );
 
 		if ( ! $post_types || ! $languages ) {
-			echo '<p>' . esc_html__( 'No translated content type.', 'extensions-for-polylang' ) . '</p>';
+			echo '<p>' . esc_html__( 'No translated content type.', 'ryadel-extensions-for-polylang' ) . '</p>';
 			return;
 		}
 		?>
-		<p class="description"><?php esc_html_e( 'All statuses except trash. Below each count, the posts in the default language that are not translated yet.', 'extensions-for-polylang' ); ?></p>
+		<p class="description"><?php esc_html_e( 'All statuses except trash. Below each count, the posts in the default language that are not translated yet.', 'ryadel-extensions-for-polylang' ); ?></p>
 		<div style="overflow-x: auto;">
 		<table class="widefat striped efpl-coverage">
 			<thead>
 				<tr>
-					<th scope="col"><?php esc_html_e( 'Content type', 'extensions-for-polylang' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Content type', 'ryadel-extensions-for-polylang' ); ?></th>
 					<?php foreach ( $languages as $slug ) : ?>
 						<th scope="col"><?php echo esc_html( $this->language_name( $slug ) ); ?></th>
 					<?php endforeach; ?>
-					<th scope="col"><?php esc_html_e( 'Without language', 'extensions-for-polylang' ); ?></th>
+					<th scope="col"><?php esc_html_e( 'Without language', 'ryadel-extensions-for-polylang' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -268,7 +268,7 @@ final class Settings_Page {
 		}
 
 		/* translators: %s: number of posts. */
-		$label = sprintf( _n( '%s to translate', '%s to translate', $missing, 'extensions-for-polylang' ), number_format_i18n( $missing ) );
+		$label = sprintf( _n( '%s to translate', '%s to translate', $missing, 'ryadel-extensions-for-polylang' ), number_format_i18n( $missing ) );
 
 		if ( 'attachment' === $post_type ) {
 			echo '<br />' . esc_html( $label );

@@ -10,11 +10,11 @@ namespace Ryadel\ExtensionsForPolylang;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Reads and writes the `extensions_for_polylang` option.
+ * Reads and writes the `ryadel_extensions_for_polylang` option.
  */
 final class Settings {
 
-	const OPTION = 'extensions_for_polylang';
+	const OPTION = 'ryadel_extensions_for_polylang';
 
 	/**
 	 * The whole option, with defaults.

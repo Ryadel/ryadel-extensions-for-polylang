@@ -27,14 +27,14 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function title() {
-		return __( 'REST API: languages and translations', 'extensions-for-polylang' );
+		return __( 'REST API: languages and translations', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function description() {
-		return __( 'Adds the lang and translations fields to posts and terms in the REST API, and filters collections by language.', 'extensions-for-polylang' );
+		return __( 'Adds the lang and translations fields to posts and terms in the REST API, and filters collections by language.', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**

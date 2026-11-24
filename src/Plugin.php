@@ -35,7 +35,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function boot() {
-		if ( null !== self::$instance || '' !== extensions_for_polylang_requirements_error() ) {
+		if ( null !== self::$instance || '' !== ryadel_extensions_for_polylang_requirements_error() ) {
 			return;
 		}
 		self::$instance = new self();
@@ -84,11 +84,11 @@ final class Plugin {
 		);
 
 		/**
-		 * Filters the modules of Extensions for Polylang.
+		 * Filters the modules of Ryadel Extensions for Polylang.
 		 *
 		 * @param Module[] $modules Modules.
 		 */
-		foreach ( (array) apply_filters( 'extensions_for_polylang_modules', $modules ) as $module ) {
+		foreach ( (array) apply_filters( 'ryadel_extensions_for_polylang_modules', $modules ) as $module ) {
 			if ( $module instanceof Module ) {
 				$this->modules[ $module->id() ] = $module;
 			}

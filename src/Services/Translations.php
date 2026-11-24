@@ -162,7 +162,7 @@ final class Translations {
 			return new WP_Error(
 				'efpl_invalid_language',
 				/* translators: %s: language slug. */
-				sprintf( __( 'Unknown language: %s.', 'extensions-for-polylang' ), is_scalar( $slug ) ? (string) $slug : '' ),
+				sprintf( __( 'Unknown language: %s.', 'ryadel-extensions-for-polylang' ), is_scalar( $slug ) ? (string) $slug : '' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -178,7 +178,7 @@ final class Translations {
 					'efpl_language_taken',
 					sprintf(
 						/* translators: 1: language slug, 2: object ID. */
-						__( 'The translation in %1$s already exists (ID %2$d). Unlink it first, or send the new translations in the same request.', 'extensions-for-polylang' ),
+						__( 'The translation in %1$s already exists (ID %2$d). Unlink it first, or send the new translations in the same request.', 'ryadel-extensions-for-polylang' ),
 						$slug,
 						$group[ $slug ]
 					),
@@ -202,7 +202,7 @@ final class Translations {
 		if ( ! $done ) {
 			return new WP_Error(
 				'efpl_language_not_set',
-				__( 'The language could not be set.', 'extensions-for-polylang' ),
+				__( 'The language could not be set.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => 500 )
 			);
 		}
@@ -259,7 +259,7 @@ final class Translations {
 		if ( null === $own ) {
 			return new WP_Error(
 				'efpl_no_language',
-				__( 'Set the language of this item before linking its translations.', 'extensions-for-polylang' ),
+				__( 'Set the language of this item before linking its translations.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -272,12 +272,12 @@ final class Translations {
 
 			if ( ! self::is_language( $slug ) ) {
 				/* translators: %s: language slug. */
-				return self::invalid_translation( sprintf( __( 'Unknown language: %s.', 'extensions-for-polylang' ), $slug ) );
+				return self::invalid_translation( sprintf( __( 'Unknown language: %s.', 'ryadel-extensions-for-polylang' ), $slug ) );
 			}
 
 			if ( ! is_int( $tr_id ) && ! ( is_string( $tr_id ) && ctype_digit( $tr_id ) ) ) {
 				/* translators: %s: language slug. */
-				return self::invalid_translation( sprintf( __( 'The %s translation must be an ID.', 'extensions-for-polylang' ), $slug ) );
+				return self::invalid_translation( sprintf( __( 'The %s translation must be an ID.', 'ryadel-extensions-for-polylang' ), $slug ) );
 			}
 			$tr_id = (int) $tr_id;
 
@@ -285,7 +285,7 @@ final class Translations {
 				if ( 0 !== $tr_id && $tr_id !== $id ) {
 					return self::invalid_translation(
 						/* translators: 1: language slug, 2: object ID. */
-						sprintf( __( 'This item is the %1$s translation: %1$s cannot point to ID %2$d.', 'extensions-for-polylang' ), $slug, $tr_id )
+						sprintf( __( 'This item is the %1$s translation: %1$s cannot point to ID %2$d.', 'ryadel-extensions-for-polylang' ), $slug, $tr_id )
 					);
 				}
 				continue;
@@ -297,17 +297,17 @@ final class Translations {
 
 			if ( $tr_id === $id ) {
 				/* translators: %s: language slug. */
-				return self::invalid_translation( sprintf( __( 'This item cannot be its own %s translation.', 'extensions-for-polylang' ), $slug ) );
+				return self::invalid_translation( sprintf( __( 'This item cannot be its own %s translation.', 'ryadel-extensions-for-polylang' ), $slug ) );
 			}
 
 			if ( self::subtype( $type, $tr_id ) !== $subtype ) {
 				/* translators: %d: object ID. */
-				return self::invalid_translation( sprintf( __( 'ID %d does not exist or is of a different type.', 'extensions-for-polylang' ), $tr_id ) );
+				return self::invalid_translation( sprintf( __( 'ID %d does not exist or is of a different type.', 'ryadel-extensions-for-polylang' ), $tr_id ) );
 			}
 
 			if ( self::get_language( $type, $tr_id ) !== $slug ) {
 				/* translators: 1: object ID, 2: language slug. */
-				return self::invalid_translation( sprintf( __( 'ID %1$d is not in %2$s.', 'extensions-for-polylang' ), $tr_id, $slug ) );
+				return self::invalid_translation( sprintf( __( 'ID %1$d is not in %2$s.', 'ryadel-extensions-for-polylang' ), $tr_id, $slug ) );
 			}
 
 			$group[ $slug ] = $tr_id;
@@ -371,7 +371,7 @@ final class Translations {
 				return new WP_Error(
 					'efpl_cannot_edit_translation',
 					/* translators: %d: object ID. */
-					sprintf( __( 'Sorry, you are not allowed to edit the translation with ID %d.', 'extensions-for-polylang' ), $tr_id ),
+					sprintf( __( 'Sorry, you are not allowed to edit the translation with ID %d.', 'ryadel-extensions-for-polylang' ), $tr_id ),
 					array( 'status' => rest_authorization_required_code() )
 				);
 			}

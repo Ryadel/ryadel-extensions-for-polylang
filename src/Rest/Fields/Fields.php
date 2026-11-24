@@ -70,7 +70,7 @@ final class Fields {
 					return self::update_language( $type, $item, $value, $request );
 				},
 				'schema'          => array(
-					'description' => __( 'Language slug. Changing it moves the item to another language.', 'extensions-for-polylang' ),
+					'description' => __( 'Language slug. Changing it moves the item to another language.', 'ryadel-extensions-for-polylang' ),
 					'type'        => array( 'string', 'null' ),
 					'enum'        => array_merge( $slugs, array( null ) ),
 					'context'     => array( 'view', 'edit', 'embed' ),
@@ -99,7 +99,7 @@ final class Fields {
 					return is_wp_error( $saved ) ? $saved : true;
 				},
 				'schema'          => array(
-					'description'          => __( 'IDs of the translations keyed by language slug, the item itself included; only the translations the user can read. Writing it replaces the whole translation group.', 'extensions-for-polylang' ),
+					'description'          => __( 'IDs of the translations keyed by language slug, the item itself included; only the translations the user can read. Writing it replaces the whole translation group.', 'ryadel-extensions-for-polylang' ),
 					'type'                 => 'object',
 					'properties'           => $properties,
 					'additionalProperties' => false,

@@ -27,14 +27,14 @@ final class Module extends Base_Module {
 	 * {@inheritDoc}
 	 */
 	public function title() {
-		return __( 'Per-language blocks', 'extensions-for-polylang' );
+		return __( 'Per-language blocks', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function description() {
-		return __( 'Shows a block only in the languages you pick, so a single header, footer or navigation works for every language.', 'extensions-for-polylang' );
+		return __( 'Shows a block only in the languages you pick, so a single header, footer or navigation works for every language.', 'ryadel-extensions-for-polylang' );
 	}
 
 	/**

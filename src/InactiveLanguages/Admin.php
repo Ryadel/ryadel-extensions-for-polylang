@@ -51,9 +51,9 @@ final class Admin {
 
 		$actions['efpl_active'] = sprintf(
 			'<a title="%s" href="%s">%s</a>',
-			esc_attr( $active ? __( 'Hide this language from visitors', 'extensions-for-polylang' ) : __( 'Show this language to visitors', 'extensions-for-polylang' ) ),
+			esc_attr( $active ? __( 'Hide this language from visitors', 'ryadel-extensions-for-polylang' ) : __( 'Show this language to visitors', 'ryadel-extensions-for-polylang' ) ),
 			esc_url( $url ),
-			esc_html( $active ? __( 'Deactivate', 'extensions-for-polylang' ) : __( 'Activate', 'extensions-for-polylang' ) )
+			esc_html( $active ? __( 'Deactivate', 'ryadel-extensions-for-polylang' ) : __( 'Activate', 'ryadel-extensions-for-polylang' ) )
 		);
 
 		return $actions;
@@ -101,7 +101,7 @@ final class Admin {
 				esc_html(
 					sprintf(
 						/* translators: %s: comma-separated list of language names. */
-						__( 'Inactive languages, hidden from visitors: %s. Editors still see them on the site.', 'extensions-for-polylang' ),
+						__( 'Inactive languages, hidden from visitors: %s. Editors still see them on the site.', 'ryadel-extensions-for-polylang' ),
 						implode( ', ', $names )
 					)
 				)
@@ -121,10 +121,10 @@ final class Admin {
 		$language = $polylang ? $polylang->model->languages->get( (int) $term_id ) : null;
 
 		if ( ! $language ) {
-			return new WP_Error( 'efpl_invalid_language', __( 'The language does not exist.', 'extensions-for-polylang' ) );
+			return new WP_Error( 'efpl_invalid_language', __( 'The language does not exist.', 'ryadel-extensions-for-polylang' ) );
 		}
 		if ( ! $active && $language->is_default ) {
-			return new WP_Error( 'efpl_default_language', __( 'The default language cannot be deactivated. Choose another default language first.', 'extensions-for-polylang' ) );
+			return new WP_Error( 'efpl_default_language', __( 'The default language cannot be deactivated. Choose another default language first.', 'ryadel-extensions-for-polylang' ) );
 		}
 
 		$metas = static function ( $add_data ) use ( $active ) {
@@ -172,7 +172,7 @@ final class Admin {
 			pll_add_notice(
 				new WP_Error(
 					'efpl_language_state',
-					$active ? __( 'Language activated.', 'extensions-for-polylang' ) : __( 'Language deactivated: visitors no longer see it.', 'extensions-for-polylang' ),
+					$active ? __( 'Language activated.', 'ryadel-extensions-for-polylang' ) : __( 'Language deactivated: visitors no longer see it.', 'ryadel-extensions-for-polylang' ),
 					'success'
 				)
 			);

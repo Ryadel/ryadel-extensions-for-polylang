@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Extensions for Polylang
- * Plugin URI:        https://github.com/Ryadel/extensions-for-polylang
+ * Plugin Name:       Ryadel Extensions for Polylang
+ * Plugin URI:        https://github.com/Ryadel/ryadel-extensions-for-polylang
  * Description:       Extends Polylang: languages and translations in the WordPress REST API, inactive languages, per-language blocks.
  * Version:           1.0.0
  * Requires at least: 6.8
@@ -10,7 +10,7 @@
  * Author URI:        https://www.ryadel.com/
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       extensions-for-polylang
+ * Text Domain:       ryadel-extensions-for-polylang
  *
  * @package ExtensionsForPolylang
  */
@@ -33,9 +33,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 defined( 'ABSPATH' ) || exit;
 
-const EXTENSIONS_FOR_POLYLANG_VERSION      = '1.0.0';
-const EXTENSIONS_FOR_POLYLANG_FILE         = __FILE__;
-const EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG = '3.9.2'; // 3.9.2 fixes an exposure of private post metadata.
+const RYADEL_EXTENSIONS_FOR_POLYLANG_VERSION      = '1.0.0';
+const RYADEL_EXTENSIONS_FOR_POLYLANG_FILE         = __FILE__;
+const RYADEL_EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG = '3.9.2'; // 3.9.2 fixes an exposure of private post metadata.
 
 spl_autoload_register(
 	static function ( $class_name ) {
@@ -55,22 +55,22 @@ spl_autoload_register(
  * site has no language yet: the plugin then stays idle, like Polylang itself.
  */
 add_action( 'pll_model_init', array( 'Ryadel\\ExtensionsForPolylang\\Plugin', 'boot' ) );
-add_action( 'admin_notices', 'extensions_for_polylang_requirements_notice' );
+add_action( 'admin_notices', 'ryadel_extensions_for_polylang_requirements_notice' );
 
 /**
  * Returns why the plugin can't run, or an empty string when Polylang is there and recent enough.
  *
  * @return string
  */
-function extensions_for_polylang_requirements_error() {
+function ryadel_extensions_for_polylang_requirements_error() {
 	if ( ! defined( 'POLYLANG_VERSION' ) ) {
-		return __( 'Extensions for Polylang requires the Polylang plugin.', 'extensions-for-polylang' );
+		return __( 'Ryadel Extensions for Polylang requires the Polylang plugin.', 'ryadel-extensions-for-polylang' );
 	}
-	if ( version_compare( POLYLANG_VERSION, EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG, '<' ) ) {
+	if ( version_compare( POLYLANG_VERSION, RYADEL_EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG, '<' ) ) {
 		return sprintf(
 			/* translators: 1: required Polylang version, 2: installed Polylang version. */
-			__( 'Extensions for Polylang requires Polylang %1$s or later (installed: %2$s).', 'extensions-for-polylang' ),
-			EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG,
+			__( 'Ryadel Extensions for Polylang requires Polylang %1$s or later (installed: %2$s).', 'ryadel-extensions-for-polylang' ),
+			RYADEL_EXTENSIONS_FOR_POLYLANG_MIN_POLYLANG,
 			POLYLANG_VERSION
 		);
 	}
@@ -78,12 +78,16 @@ function extensions_for_polylang_requirements_error() {
 }
 
 /**
- * Tells administrators why the plugin is idle.
+ * Tells administrators why the plugin is idle, on the Plugins screen only.
  *
  * @return void
  */
-function extensions_for_polylang_requirements_notice() {
-	$error = extensions_for_polylang_requirements_error();
+function ryadel_extensions_for_polylang_requirements_notice() {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( ! $screen || 'plugins' !== $screen->id ) {
+		return;
+	}
+	$error = ryadel_extensions_for_polylang_requirements_error();
 	if ( '' !== $error && current_user_can( 'activate_plugins' ) ) {
 		printf( '<div class="notice notice-error"><p>%s</p></div>', esc_html( $error ) );
 	}

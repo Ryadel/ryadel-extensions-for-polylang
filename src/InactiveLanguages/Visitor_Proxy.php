@@ -31,7 +31,7 @@ final class Visitor_Proxy implements Languages_Proxy_Interface {
 	 * @return string
 	 */
 	public function key(): string {
-		return 'extensions_for_polylang_hide_inactive';
+		return 'ryadel_extensions_for_polylang_hide_inactive';
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /**
- * Extensions for Polylang: "Languages" panel for every block.
+ * Ryadel Extensions for Polylang: "Languages" panel for every block.
  *
  * No build step: plain ES5 with the wp.* globals. Adds the `efplLanguages` attribute to every block type and a
  * panel in the block settings to choose the languages in which the block is shown. No language selected means
@@ -22,7 +22,7 @@
 	// The attribute, also for blocks registered only in JavaScript. Server-side blocks already get it from PHP.
 	wp.hooks.addFilter(
 		'blocks.registerBlockType',
-		'extensions-for-polylang/languages-attribute',
+		'ryadel-extensions-for-polylang/languages-attribute',
 		function ( settings ) {
 			var attributes = settings.attributes || {};
 			if ( attributes[ ATTRIBUTE ] ) {
@@ -67,13 +67,13 @@
 					el(
 						wp.components.PanelBody,
 						{
-							title: __( 'Languages', 'extensions-for-polylang' ),
+							title: __( 'Languages', 'ryadel-extensions-for-polylang' ),
 							initialOpen: selected.length > 0,
 						},
 						el(
 							'p',
 							{ className: 'components-base-control__help' },
-							__( 'Show this block only in the selected languages. With none selected, it is shown in every language.', 'extensions-for-polylang' )
+							__( 'Show this block only in the selected languages. With none selected, it is shown in every language.', 'ryadel-extensions-for-polylang' )
 						),
 						languages.map( function ( language ) {
 							return el( wp.components.CheckboxControl, {
@@ -95,5 +95,5 @@
 		return;
 	}
 
-	wp.hooks.addFilter( 'editor.BlockEdit', 'extensions-for-polylang/languages-panel', withLanguagesPanel );
-}( window.wp, window.extensionsForPolylangBlocks ) );
+	wp.hooks.addFilter( 'editor.BlockEdit', 'ryadel-extensions-for-polylang/languages-panel', withLanguagesPanel );
+}( window.wp, window.ryadelExtensionsForPolylangBlocks ) );

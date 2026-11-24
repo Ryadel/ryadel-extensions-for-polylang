@@ -17,14 +17,14 @@ use WP_REST_Server;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * `POST extensions-for-polylang/v1/posts`: creates one post per language through the core endpoint of the post type,
+ * `POST ryadel-extensions-for-polylang/v1/posts`: creates one post per language through the core endpoint of the post type,
  * links them as translations, and deletes everything it created if any step fails.
  *
  * Terms can be given by slug or name in the taxonomy fields (`categories`, `tags`...), besides IDs.
  */
 final class Posts_Controller {
 
-	const REST_NAMESPACE = 'extensions-for-polylang/v1';
+	const REST_NAMESPACE = 'ryadel-extensions-for-polylang/v1';
 
 	/**
 	 * Most terms accepted in one taxonomy field of one language.
@@ -87,17 +87,17 @@ final class Posts_Controller {
 				'permission_callback' => array( $this, 'create_item_permissions_check' ),
 				'args'                => array(
 					'type'         => array(
-						'description' => __( 'Post type.', 'extensions-for-polylang' ),
+						'description' => __( 'Post type.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'string',
 						'default'     => 'post',
 					),
 					'create_terms' => array(
-						'description' => __( 'Whether to create the terms that match no existing term in any language.', 'extensions-for-polylang' ),
+						'description' => __( 'Whether to create the terms that match no existing term in any language.', 'ryadel-extensions-for-polylang' ),
 						'type'        => 'boolean',
 						'default'     => false,
 					),
 					'translations' => array(
-						'description'          => __( 'One object per language, keyed by language slug, with the fields accepted by the core endpoint of the post type. Terms can be given by slug or name.', 'extensions-for-polylang' ),
+						'description'          => __( 'One object per language, keyed by language slug, with the fields accepted by the core endpoint of the post type. Terms can be given by slug or name.', 'ryadel-extensions-for-polylang' ),
 						'type'                 => 'object',
 						'required'             => true,
 						'minProperties'        => 1,
@@ -121,7 +121,7 @@ final class Posts_Controller {
 		if ( ! $post_type || empty( $post_type->show_in_rest ) || ! Translations::is_translated( Translations::POST, $post_type->name ) ) {
 			return new WP_Error(
 				'efpl_invalid_post_type',
-				__( 'The post type does not exist, is not shown in the REST API or is not translated.', 'extensions-for-polylang' ),
+				__( 'The post type does not exist, is not shown in the REST API or is not translated.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -129,7 +129,7 @@ final class Posts_Controller {
 		if ( ! current_user_can( $post_type->cap->create_posts ) ) {
 			return new WP_Error(
 				'rest_cannot_create',
-				__( 'Sorry, you are not allowed to create posts as this user.', 'extensions-for-polylang' ),
+				__( 'Sorry, you are not allowed to create posts as this user.', 'ryadel-extensions-for-polylang' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -330,7 +330,7 @@ final class Posts_Controller {
 					return new WP_Error(
 						'efpl_too_many_terms',
 						/* translators: 1: field name, 2: language slug, 3: maximum number of terms. */
-						sprintf( __( '%1$s (%2$s) can have at most %3$d terms.', 'extensions-for-polylang' ), $field, $lang, self::MAX_TERMS ),
+						sprintf( __( '%1$s (%2$s) can have at most %3$d terms.', 'ryadel-extensions-for-polylang' ), $field, $lang, self::MAX_TERMS ),
 						array(
 							'status' => 400,
 							'lang'   => $lang,
@@ -354,7 +354,7 @@ final class Posts_Controller {
 		return new WP_Error(
 			'efpl_invalid_terms',
 			/* translators: 1: field name, 2: language slug. */
-			sprintf( __( '%1$s (%2$s) must be a list of term IDs, slugs or names.', 'extensions-for-polylang' ), $field, $lang ),
+			sprintf( __( '%1$s (%2$s) must be a list of term IDs, slugs or names.', 'ryadel-extensions-for-polylang' ), $field, $lang ),
 			array(
 				'status' => 400,
 				'lang'   => $lang,
@@ -382,7 +382,7 @@ final class Posts_Controller {
 			return new WP_Error(
 				'efpl_terms_not_found',
 				/* translators: %s: list of taxonomies and terms. */
-				sprintf( __( 'Terms not found (%s). Send create_terms=true to create them.', 'extensions-for-polylang' ), implode( '; ', $list ) ),
+				sprintf( __( 'Terms not found (%s). Send create_terms=true to create them.', 'ryadel-extensions-for-polylang' ), implode( '; ', $list ) ),
 				array(
 					'status'  => 400,
 					'missing' => array_map( 'array_values', $missing ),
@@ -396,7 +396,7 @@ final class Posts_Controller {
 				return new WP_Error(
 					'efpl_cannot_create_terms',
 					/* translators: %s: taxonomy. */
-					sprintf( __( 'Sorry, you are not allowed to create terms in %s.', 'extensions-for-polylang' ), $taxonomy ),
+					sprintf( __( 'Sorry, you are not allowed to create terms in %s.', 'ryadel-extensions-for-polylang' ), $taxonomy ),
 					array( 'status' => rest_authorization_required_code() )
 				);
 			}

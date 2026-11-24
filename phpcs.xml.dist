@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Extensions for Polylang">
-	<description>WordPress Coding Standards for Extensions for Polylang.</description>
+<ruleset name="Ryadel Extensions for Polylang">
+	<description>WordPress Coding Standards for Ryadel Extensions for Polylang.</description>
 
 	<file>.</file>
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -22,7 +22,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="extensions-for-polylang"/>
+				<element value="ryadel-extensions-for-polylang"/>
 			</property>
 		</properties>
 	</rule>
@@ -30,7 +30,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="extensions_for_polylang"/>
+				<element value="ryadel_extensions_for_polylang"/>
 				<element value="Ryadel\ExtensionsForPolylang"/>
 			</property>
 		</properties>

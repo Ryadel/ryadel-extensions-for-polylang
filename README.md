@@ -1,4 +1,4 @@
-# Extensions for Polylang
+# Ryadel Extensions for Polylang
 
 A useful set of extensions for the free version of [Polylang](https://wordpress.org/plugins/polylang/):
 
@@ -21,5 +21,5 @@ WordPress 6.8 or later, PHP 7.4 or later, Polylang 3.9.2 or later.
 
 [GPLv2 or later](license.txt).
 
-Extensions for Polylang is developed by [Ryadel](https://www.ryadel.com/) and is not affiliated with Polylang or
+Ryadel Extensions for Polylang is developed by [Ryadel](https://www.ryadel.com/) and is not affiliated with Polylang or
 WP SYNTEX.

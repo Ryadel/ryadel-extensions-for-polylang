@@ -51,7 +51,7 @@ final class Language_Filter {
 	 */
 	public function add_collection_param( $params ) {
 		$params['lang'] = array(
-			'description' => __( 'Limit results to the items in a language.', 'extensions-for-polylang' ),
+			'description' => __( 'Limit results to the items in a language.', 'ryadel-extensions-for-polylang' ),
 			'type'        => 'string',
 			'enum'        => Translations::language_slugs(),
 		);
